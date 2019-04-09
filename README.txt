@@ -12,7 +12,10 @@ Edits to the data file:
 
 Visualizations to make:
 - geographic visualization -C
-- D3 bar graphs
+ -*Add color gradient depending on avg review score
+ - Add interaction
+  - hotel/review information on hover/click
+-*D3 bar graphs
  - avg&total reviews vs room type
  - avg&total reviews vs nationality
  - avg&total reviews vs trip type
