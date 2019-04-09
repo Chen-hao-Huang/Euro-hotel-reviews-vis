@@ -22,6 +22,7 @@ Visualizations to make:
  - avg&total reviews vs review month
 - (possibly) calendar vis of avg revew score per day/week
 - (possibly) D3 pie charts, word clouds (check proposed solutions)
+ - Get .txt of list of words, not including stopwords
 
 Other:
 - Figure out how to implement filtering of the data to apply to all of the visualizations
