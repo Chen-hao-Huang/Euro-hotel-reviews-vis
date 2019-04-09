@@ -31,3 +31,5 @@ Write-ups/presentation:
 - link and test live demo in presentation
 - backup snapshots of demo in case live demo issues
 - (optional) Evaluation
+---------------------------------------------
+List of stopwords from https://gist.github.com/sebleier/554280
