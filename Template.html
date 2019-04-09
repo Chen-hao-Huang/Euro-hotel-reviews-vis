@@ -48,7 +48,7 @@ var markers = [
 d3.select("#mapid")
   .select("svg")
   .selectAll("myCircles")
-  .data(markers)
+  .data(hotels)
   .enter()
   .append("circle")
     .attr("cx", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).x })

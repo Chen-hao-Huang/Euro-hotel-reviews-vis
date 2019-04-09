@@ -10,7 +10,7 @@ hotels =
           "Total_Number_of_Reviews": "1403",
           "Positive_Review": " Only the park outside of the hotel was beautiful ",
           "Total_Number_of_Reviews_Reviewer_Has_Given": "7",
-          "Reviewer_Score": "2.9",
+          "Reviewer_Score": 2.9,
           "days_since_review": "0",
           "Trip_Type": " Leisure trip ",
           "Travel_Group": "  Couple ",
@@ -21,4 +21,4 @@ hotels =
             4.9159683
           ]
         },
-      ]
+      ];
