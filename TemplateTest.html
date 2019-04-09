@@ -17,8 +17,7 @@
 #mapid { height: 600px; }
 </style>
 
-<script type='text/javascript' src='data/Hotel_test.json'></script>
-
+<script type='text/javascript' src='data/test.json'></script>
 
 <script>
 // mapid is the id of the div where the map will appear
@@ -32,21 +31,12 @@ var map = L.map( 'mapid', {
 L.tileLayer(
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
-    maxZoom: 9,
+    maxZoom: 22,
     }).addTo(map);
 
 // Add a svg layer to the map
 L.svg().addTo(map);
 
-// Create data for circles:
-var markers = [
-  {long: 9.083, lat: 42.149}, // corsica
-  {long: 7.26, lat: 43.71}, // nice
-  {long: 2.349, lat: 48.864}, // Paris
-  {long: -1.397, lat: 43.664}, // Hossegor
-  {long: 3.075, lat: 50.640}, // Lille
-  {long: -3.83, lat: 48}, // Morlaix
-];
 
 // Select the svg area and add circles:
 d3.select("#mapid")
@@ -55,8 +45,8 @@ d3.select("#mapid")
   .data(hotels)
   .enter()
   .append("circle")
-    .attr("cx", function(d){ console.log(d);console.log(map.latLngToLayerPoint(d.Coordinates) ); return map.latLngToLayerPoint(d.Coordinates).x })
-    .attr("cy", function(d){ console.log(map.latLngToLayerPoint(d.Coordinates).y ); return map.latLngToLayerPoint(d.Coordinates).y })
+    .attr("cx", function(d){  return map.latLngToLayerPoint(d.Coordinates).x })
+    .attr("cy", function(d){  return map.latLngToLayerPoint(d.Coordinates).y })
     .attr("r", 14)
     .style("fill", "red")
     .attr("stroke", "red")
