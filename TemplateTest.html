@@ -17,7 +17,7 @@
 #mapid { height: 600px; }
 </style>
 
-<script type='text/javascript' src='data/test.json'></script>
+<script type='text/javascript' src='data/Hotel_data_test.json'></script>
 
 <script>
 // mapid is the id of the div where the map will appear
@@ -42,7 +42,7 @@ L.svg().addTo(map);
 d3.select("#mapid")
   .select("svg")
   .selectAll("myCircles")
-  .data(hotels)
+  .data(Hotel_data_test)
   .enter()
   .append("circle")
     .attr("cx", function(d){  return map.latLngToLayerPoint(d.Coordinates).x })
