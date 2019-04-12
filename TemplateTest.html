@@ -1,4 +1,4 @@
-<!-- Code from d3-graph-gallery.com -->
+
 <!DOCTYPE html>
 <meta charset="utf-8">
 
@@ -37,7 +37,34 @@ L.tileLayer(
 
 // Add a svg layer to the map
 L.svg().addTo(map);
-
+//Add tooltip 
+var Tooltip = d3.select("#mapid")
+      .append("div")
+	  .attr("id","mytooltip")
+      .attr("class", "leaflet-pane leaflet-tooltip-pane")
+      .style("opacity", 1)
+      .style("background-color", "yellow")
+      .style("border", "solid")
+      .style("border-width", "1px")
+      .style("border-radius", "10px")
+      .style("padding", "5px")
+	  
+var in_circle = function(d) {
+      Tooltip.style("opacity", 1)
+	    d3.select(this)
+   	    .attr("fill", "purple");
+    }	
+var out_circle = function(d) {
+      Tooltip.style("opacity", 0)
+  	  d3.select(this)
+        .attr("fill", "rgb("+(-d.Average_Score+10) * (-d.Average_Score+10)*30 +"," + (-d.Average_Score+5) * (-d.Average_Score+5)*20 + " , 0)");
+    }	
+var showme = function(d) {
+         Tooltip
+        .html("Hotel Name" + d.Hotel_Name.toString() + "<br>" + "Score: " + d.Average_Score + "<br>" + "Adress: " + d.Hotel_Address.toString())
+	      .style("left", (map.latLngToLayerPoint(d.Coordinates).x) + "px")
+	    	.style("top", (map.latLngToLayerPoint(d.Coordinates).y) + "px")
+    } 
 
 // Select the svg area and add circles:
 d3.select("#mapid")
@@ -49,15 +76,16 @@ d3.select("#mapid")
     .attr("cx", function(d){  return map.latLngToLayerPoint(d.Coordinates).x })
     .attr("cy", function(d){  return map.latLngToLayerPoint(d.Coordinates).y })
     .attr("r", function(d){  return Math.max(d.Total_Number_of_Reviews/500,5)})
-    .style("fill", "red")
-    .attr("stroke", "red")
-    .attr("stroke-width", 2)
-    .attr("fill-opacity", .4)
-    .on('mouseover', function(d){
-      console.log("s");
+    .style("fill", function(d){ return "rgb("+(-d.Average_Score+10) * (-d.Average_Score+10)*30 +", " + (-d.Average_Score+5) * (-d.Average_Score+5)*20 + ",0)" })
+    .attr("stroke", "yellow")
+    .attr("stroke-width", 0.1)
+    .attr("fill-opacity", .6)
+    .on("mousemove", showme)
+    .on("mouseover",in_circle)
+    .on("mouseleave",out_circle);
       
 
-})
+
 
 // Function that update circle position if something change
 function update() {
