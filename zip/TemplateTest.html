@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js and the geo projection plugin -->
+<script src="http://d3js.org/d3.v4.js"></script>
+<script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="https://rawgit.com/jasondavies/d3-cloud/master/build/d3.layout.cloud.js"></script>
+
+<!-- Load Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js" integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA==" crossorigin=""></script>
+
+<!-- Create an element where the map will take place -->
+<div id="mapid"></div>
+
+<style>
+#mapid { height: 600px; }
+svg {pointer-events:all;}
+</style>
+<style>
+    body {
+        font-family:"Lucida Grande","Droid Sans",Arial,Helvetica,sans-serif;
+    }
+    .legend {
+        border: 1px solid #555555;
+        border-radius: 5px 5px 5px 5px;
+        font-size: 0.8em;
+        margin: 10px;
+        padding: 8px;
+    }
+    .bld {
+        font-weight: bold;
+    }
+</style>
+<style type="text/css">
+	rect:hover {fill: orange;}
+</style>
+
+<script type='text/javascript' src='data/Hotel_test_clean.json'></script>
+<script type='text/javascript' src='data/Neg_Review.json'></script>
+<script type='text/javascript' src='data/Pos_Review.json'></script>
+
+<script>
+var cloud_pos = function(d) {
+    var fill = d3.scale.category20();
+    var width = 500;
+    var height = 350;
+    var hotel_name = d;
+    var pos_data = Pos_Review[hotel_name];
+
+    d3.select("p").text("<br>" + "Positive Reviews for Hotel: " + "<br>");
+
+    d3.layout.cloud().size([width, height])
+            .words(pos_data)
+            .padding(0)
+            .rotate(function() { return ~~(Math.random() * 2 ) * 90; })
+            .font("Impact")
+            .fontSize(function(d) { return d.size; })
+            .on("end", draw)
+            .start();
+
+    function draw(words) {
+        d3.select("body").append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("class", "wordcloud")
+                .append("g")
+                .attr("transform", "translate("+(width / 2)+","+(height / 2)+")")
+                .selectAll("text")
+                .data(words)
+                .enter().append("text")
+                .style("font-size", function(d) { return d.size + "px"; })
+                .style("fill", function(d, i) { return fill(i); })
+                .attr("transform", function(d) {
+                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                })
+                .attr("text-anchor", "middle")
+                .text(function(d) { return d.text; });
+    }
+}
+
+var color = d3.scale.linear()
+        .domain([0,1,2,3,4,5,6,10,15,20,100])
+        // .range(["#ddd", "#ccc", "#bbb", "#aaa", "#999", "#888", "#777", "#666", "#555", "#444", "#333", "#222"])
+        .range(["#222", "#333", "#444", "#555", "#666", "#777", "#888", "#999", "#aaa", "#bbb", "#ccc", "#ddd"]);
+
+var cloud_neg = function(d) {
+    var fill = d3.scale.category20();
+    var width = 500;
+    var height = 350;
+    var hotel_name = d;
+    var neg_data = Neg_Review[hotel_name];
+
+    d3.select("p").text("<br>" + "Negative Reviews for Hotel: " + hotel_name + "<br>");
+
+    d3.layout.cloud().size([width, height])
+            .words(neg_data)
+            .padding(0)
+            .rotate(function() { return ~~(Math.random() * 2 ) * 90; })
+            .font("Impact")
+            .fontSize(function(d) { return d.size; })
+            .on("end", draw)
+            .start();
+
+    function draw(words) {
+        d3.select("body").append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("class", "wordcloud")
+                .append("g")
+                .attr("transform", "translate("+(width / 2)+","+(height / 2)+")")
+                .selectAll("text")
+                .data(words)
+                .enter().append("text")
+                .style("font-size", function(d) { return d.size + "px"; })
+                .style("fill", function(d, i) { return color(i); })
+                .attr("transform", function(d) {
+                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                })
+                .attr("text-anchor", "middle")
+                .text(function(d) { return d.text; });
+    }
+}
+</script>
+
+<script>
+// mapid is the id of the div where the map will appear
+var map = L.map( 'mapid', {
+  center: [46.0, 5.0],
+  minZoom: 2,
+  zoom: 5
+})
+
+// Add a tile to the map = a background. Comes from OpenStreetmap
+L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
+    maxZoom: 22,
+    }).addTo(map);
+
+// Add a svg layer to the map
+L.svg().addTo(map);
+//Add tooltip 
+var Tooltip = d3.select("#mapid")
+      .append("div")
+	  .attr("id","mytooltip")
+      .attr("class", "leaflet-pane leaflet-tooltip-pane")
+      .style("opacity", 1)
+      .style("background-color", "yellow")
+      .style("border", "solid")
+      .style("border-width", "1px")
+      .style("border-radius", "10px")
+      .style("padding", "5px")
+	  
+var in_circle = function(d) {
+      Tooltip.style("opacity", 1)
+	    d3.select(this)
+   	    .attr("fill", "purple");
+    }	
+var out_circle = function(d) {
+      Tooltip.style("opacity", 0)
+  	  d3.select(this)
+        .attr("fill", "rgb("+(-d.Average_Score+10) * (-d.Average_Score+10)*30 +"," + (-d.Average_Score+5) * (-d.Average_Score+5)*20 + " , 0)");
+    }	
+var showme = function(d) {
+         Tooltip
+        .html("Hotel Name: " + d.Hotel_Name.toString() + "<br>" + "Average Score: " + d.Average_Score + "<br>" + "Adress: " + d.Hotel_Address.toString())
+	    .style("left", (map.latLngToLayerPoint(d.Coordinates).x) + "px")
+	    .style("top", (map.latLngToLayerPoint(d.Coordinates).y) + "px")
+    } 
+
+// Select the svg area and add circles:
+d3.select("#mapid")
+  .select("svg")
+  .selectAll("myCircles")
+  .data(hotels)
+  .enter()
+  .append("circle")
+    .attr("cx", function(d){  return map.latLngToLayerPoint(d.Coordinates).x })
+    .attr("cy", function(d){  return map.latLngToLayerPoint(d.Coordinates).y })
+    .attr("r", function(d){  return Math.max(d.Total_Number_of_Reviews/500,5)})
+    .style("fill", function(d){ return "rgb("+(-d.Average_Score+10) * (-d.Average_Score+10)*30 +", " + (-d.Average_Score+5) * (-d.Average_Score+5)*20 + ",0)" })
+    .attr("stroke", "yellow")
+    .attr("stroke-width", 0.1)
+    .attr("fill-opacity", .6)
+    .on("mousemove", showme)
+    .on("mouseover",in_circle)
+    .on("mouseleave",out_circle)
+    .on("click", function(d) { 
+    	console.log(d["Hotel_Name"]); 
+    	cloud_pos(d["Hotel_Name"]);
+    	cloud_neg(d["Hotel_Name"]);
+    	});
+      
+
+
+
+// Function that update circle position if something change
+function update() {
+  d3.selectAll("circle")
+    .attr("cx", function(d){ return map.latLngToLayerPoint(d.Coordinates).x })
+    .attr("cy", function(d){ return map.latLngToLayerPoint(d.Coordinates).y })
+}
+
+
+// If the user change the map (zoom or drag), I update circle position:
+map.on("moveend", update)
+
+
+</script>
+
