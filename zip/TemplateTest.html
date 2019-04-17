@@ -43,86 +43,85 @@ svg {pointer-events:all;}
 <script type='text/javascript' src='data/Pos_Review.json'></script>
 
 <script>
-var cloud_pos = function(d) {
-    var fill = d3.scale.category20();
-    var width = 500;
-    var height = 350;
-    var hotel_name = d;
-    var pos_data = Pos_Review[hotel_name];
-
-    d3.select("p").text("<br>" + "Positive Reviews for Hotel: " + "<br>");
-
-    d3.layout.cloud().size([width, height])
-            .words(pos_data)
-            .padding(0)
-            .rotate(function() { return ~~(Math.random() * 2 ) * 90; })
-            .font("Impact")
-            .fontSize(function(d) { return d.size; })
-            .on("end", draw)
-            .start();
-
-    function draw(words) {
-        d3.select("body").append("svg")
-                .attr("width", width)
-                .attr("height", height)
-                .attr("class", "wordcloud")
-                .append("g")
-                .attr("transform", "translate("+(width / 2)+","+(height / 2)+")")
-                .selectAll("text")
-                .data(words)
-                .enter().append("text")
-                .style("font-size", function(d) { return d.size + "px"; })
-                .style("fill", function(d, i) { return fill(i); })
-                .attr("transform", function(d) {
-                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-                })
-                .attr("text-anchor", "middle")
-                .text(function(d) { return d.text; });
-    }
-}
-
 var color = d3.scale.linear()
         .domain([0,1,2,3,4,5,6,10,15,20,100])
-        // .range(["#ddd", "#ccc", "#bbb", "#aaa", "#999", "#888", "#777", "#666", "#555", "#444", "#333", "#222"])
         .range(["#222", "#333", "#444", "#555", "#666", "#777", "#888", "#999", "#aaa", "#bbb", "#ccc", "#ddd"]);
 
-var cloud_neg = function(d) {
+function wordCloud(d, type) {
     var fill = d3.scale.category20();
     var width = 500;
     var height = 350;
-    var hotel_name = d;
-    var neg_data = Neg_Review[hotel_name];
 
-    d3.select("p").text("<br>" + "Negative Reviews for Hotel: " + hotel_name + "<br>");
-
-    d3.layout.cloud().size([width, height])
-            .words(neg_data)
-            .padding(0)
-            .rotate(function() { return ~~(Math.random() * 2 ) * 90; })
-            .font("Impact")
-            .fontSize(function(d) { return d.size; })
-            .on("end", draw)
-            .start();
+    var svg = d3.select(d).append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", "translate("+(width / 2)+","+(height / 2)+")");
 
     function draw(words) {
-        d3.select("body").append("svg")
-                .attr("width", width)
-                .attr("height", height)
-                .attr("class", "wordcloud")
-                .append("g")
-                .attr("transform", "translate("+(width / 2)+","+(height / 2)+")")
-                .selectAll("text")
-                .data(words)
-                .enter().append("text")
-                .style("font-size", function(d) { return d.size + "px"; })
-                .style("fill", function(d, i) { return color(i); })
-                .attr("transform", function(d) {
-                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-                })
-                .attr("text-anchor", "middle")
-                .text(function(d) { return d.text; });
+        var cloud = svg.selectAll("g text")
+                    .data(words, function(d) { return d.text; })
+
+        cloud.enter()
+            .append("text")
+            .style("font-size", function(d) { return d.size + "px"; })
+            // .style("fill", function(d, i) { return fill(i); })
+            .attr("transform", function(d) {
+                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+            })
+            .attr("text-anchor", "middle")
+            .text(function(d) { return d.text; });
+
+        if (type === "pos") {
+            cloud.style("fill", function(d, i) { return fill(i); });
+        }
+        if (type === "neg") {
+            cloud.style("fill", function(d, i) { return color(i); });
+        }
+
+        cloud.transition()
+            .duration(1000)
+            .style("font-size", function(d) { return d.size + "px"; })
+            .attr("transform", function(d) {
+                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+            })
+            .attr("text-anchor", "middle")
+            .style("fill-opacity", 1);
+
+        cloud.exit()
+            .transition()
+            .duration(500)
+            .style('fill-opacity', 1e-6)
+            .attr('font-size', 1)
+            .remove();
+    }
+
+    return {
+        update: function(words) {
+            d3.layout.cloud().size([width, height])
+                .words(words)
+                .padding(0)
+                .rotate(function() { return ~~(Math.random() * 2) * 90; })
+                .font("Impact")
+                .fontSize(function(d) { return d.size; })
+                .on("end", draw)
+                .start();
+        }
     }
 }
+
+function pos_review(vis, selected_hotel) {
+    var pos_data = Pos_Review[selected_hotel];
+    vis.update(pos_data);
+}
+
+function neg_review(vis, selected_hotel) {
+    var neg_data = Neg_Review[selected_hotel];
+    vis.update(neg_data);
+}
+
+var pos_cloud = wordCloud('body', "pos");
+var neg_cloud = wordCloud('body', "neg");
 </script>
 
 <script>
@@ -190,13 +189,10 @@ d3.select("#mapid")
     .on("mouseleave",out_circle)
     .on("click", function(d) { 
     	console.log(d["Hotel_Name"]); 
-    	cloud_pos(d["Hotel_Name"]);
-    	cloud_neg(d["Hotel_Name"]);
+        pos_review(pos_cloud, d["Hotel_Name"]);
+        neg_review(neg_cloud, d["Hotel_Name"]);
     	});
-      
-
-
-
+	
 // Function that update circle position if something change
 function update() {
   d3.selectAll("circle")
