@@ -106,8 +106,8 @@ function wordCloud(d, type) {
     }
 }
 
-var pos_cloud = wordCloud('body', "pos");
-var neg_cloud = wordCloud('body', "neg");
+var pos_cloud = wordCloud("body", "pos");
+var neg_cloud = wordCloud("body", "neg");
 	
 function pos_review(pos_cloud, selected_hotel) {
     var pos_data = Pos_Review[selected_hotel];
@@ -122,7 +122,7 @@ function neg_review(neg_cloud, selected_hotel) {
 
 <script>
 // mapid is the id of the div where the map will appear
-var map = L.map( 'mapid', {
+var map = L.map( "mapid", {
   center: [46.0, 5.0],
   minZoom: 2,
   zoom: 5
