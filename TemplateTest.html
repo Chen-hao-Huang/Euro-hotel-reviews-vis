@@ -60,11 +60,10 @@ var out_circle = function(d) {
         .style("fill", "rgb("+(-d.Average_Score+10) * (-d.Average_Score+10)*30 +"," + (-d.Average_Score+5) * (-d.Average_Score+5)*20 + " , 0)");
     }	
 var showme = function(d) {
+  
   d3.select(this)
    	    .style("fill", "purple")
         .style("cursor", "pointer");
-
-    
          Tooltip
         .html("Hotel Name" + d.Hotel_Name.toString() + "<br>" + "Score: " + d.Average_Score + "<br>" + "Adress: " + d.Hotel_Address.toString())
 	      // .style("left", (map.latLngToLayerPoint(d.Coordinates).x) + "px")
@@ -74,9 +73,11 @@ var showme = function(d) {
         .style("background-color", "rgb("+(-d.Average_Score+10) * (-d.Average_Score+10)*30 +"," + (-d.Average_Score+5) * (-d.Average_Score+5)*20 + " , 0)");
     } 
 
+
     //onclick change the other sub graphs 
     var click_hotel = function(d) {
-    console.log(d);
+      map.setView(d.Coordinates, map.getZoom()+2);
+    console.log(map.getZoom());
     }	
 // Select the svg area and add circles:
 d3.select("#mapid")
