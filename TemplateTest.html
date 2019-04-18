@@ -29,7 +29,18 @@
 
 <style>
 #mapid { height: 600px; }
+.legend { text-align: left; line-height: 28px; color: #555; } .legend i { width: 28px; height: 28px; float: left; margin-right: 8px; opacity: 0.7; }
+
+.info {
+    padding: 16px 18px;
+    font: 14px/28px Arial, Helvetica, sans-serif;
+    background: white;
+    background: #ffffff;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
 svg {pointer-events:all;}
+
 </style>
 
 <script type='text/javascript' src='data/Hotel_data_test.json'></script>
@@ -51,6 +62,9 @@ L.tileLayer(
 
 // Add a svg layer to the map
 L.svg().addTo(map);
+var getColor  = function(Average_Score){
+  return ("rgb("+(-Average_Score+10) * (-Average_Score+10)*30 +", " + (-Average_Score+5) * (-Average_Score+5)*20 + ",0)")
+}
 //Add tooltip 
 var Tooltip = d3.select("#mapid")
       .append("div")
@@ -71,7 +85,7 @@ var in_circle = function(d) {
 var out_circle = function(d) {
       Tooltip.style("opacity", 0)
   	  d3.select(this)
-        .style("fill", "rgb("+(-d.Average_Score+10) * (-d.Average_Score+10)*30 +"," + (-d.Average_Score+5) * (-d.Average_Score+5)*20 + " , 0)");
+        .style("fill", getColor(d.Average_Score));
     }	
 var showme = function(d) {
   
@@ -84,7 +98,7 @@ var showme = function(d) {
 	    	// .style("top", (map.latLngToLayerPoint(d.Coordinates).y) + "px")
         .style("left", "0px")
 	    	.style("top",  "520px")
-        .style("background-color", "rgb("+(-d.Average_Score+10) * (-d.Average_Score+10)*30 +"," + (-d.Average_Score+5) * (-d.Average_Score+5)*20 + " , 0)");
+        .style("background-color",  getColor(d.Average_Score));
     } 
 
    
@@ -110,7 +124,7 @@ d3.select("#mapid")
     .attr("cx", function(d){  return map.latLngToLayerPoint(d.Coordinates).x })
     .attr("cy", function(d){  return map.latLngToLayerPoint(d.Coordinates).y })
     .attr("r", function(d){  return Math.max(d.Total_Number_of_Reviews/500,5)})
-    .style("fill", function(d){ return "rgb("+(-d.Average_Score+10) * (-d.Average_Score+10)*30 +", " + (-d.Average_Score+5) * (-d.Average_Score+5)*20 + ",0)" })
+    .style("fill", function(d){ return  getColor(d.Average_Score) })
     .attr("stroke", "yellow")
     .attr("stroke-width", 0.1)
     .attr("fill-opacity", .6)
@@ -128,8 +142,36 @@ function update() {
 }
 
 
+
 // If the user change the map (zoom or drag), I update circle position:
 map.on("moveend", update)
+
+
+
+var legend = L.control({position: 'bottomright'});
+
+legend.onAdd = function (map) {
+
+  var div = L.DomUtil.create('div', 'info legend'),
+    grades = [ 5.5, 6,6.5, 7,7.5,8,9,10],
+    labels = [],
+    from, to;
+
+  for (var i = 0; i < grades.length; i++) {
+    from = grades[i];
+    to = grades[i + 1];
+
+    labels.push(
+      '<i style="background:' + getColor(from + 1) + '"></i> ' +
+      from + (to ? '&ndash;' + to : '+'));
+  }
+
+  div.innerHTML = labels.join('<br>');
+  return div;
+};
+
+legend.addTo(map);
+
 
 
 </script>
