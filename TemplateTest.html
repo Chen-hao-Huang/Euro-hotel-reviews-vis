@@ -62,8 +62,11 @@ var out_circle = function(d) {
 var showme = function(d) {
          Tooltip
         .html("Hotel Name" + d.Hotel_Name.toString() + "<br>" + "Score: " + d.Average_Score + "<br>" + "Adress: " + d.Hotel_Address.toString())
-	      .style("left", (map.latLngToLayerPoint(d.Coordinates).x) + "px")
-	    	.style("top", (map.latLngToLayerPoint(d.Coordinates).y) + "px")
+	      // .style("left", (map.latLngToLayerPoint(d.Coordinates).x) + "px")
+	    	// .style("top", (map.latLngToLayerPoint(d.Coordinates).y) + "px")
+        .style("left", "0px")
+	    	.style("top",  "520px")
+        .style("background-color", "rgb("+(-d.Average_Score+10) * (-d.Average_Score+10)*30 +"," + (-d.Average_Score+5) * (-d.Average_Score+5)*20 + " , 0)");
     } 
 
 // Select the svg area and add circles:
