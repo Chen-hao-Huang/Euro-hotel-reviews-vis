@@ -52,14 +52,17 @@ var Tooltip = d3.select("#mapid")
 var in_circle = function(d) {
       Tooltip.style("opacity", 1)
 	    d3.select(this)
-   	    .attr("fill", "purple");
+   	    .style("fill", "purple");
     }	
 var out_circle = function(d) {
       Tooltip.style("opacity", 0)
   	  d3.select(this)
-        .attr("fill", "rgb("+(-d.Average_Score+10) * (-d.Average_Score+10)*30 +"," + (-d.Average_Score+5) * (-d.Average_Score+5)*20 + " , 0)");
+        .style("fill", "rgb("+(-d.Average_Score+10) * (-d.Average_Score+10)*30 +"," + (-d.Average_Score+5) * (-d.Average_Score+5)*20 + " , 0)");
     }	
 var showme = function(d) {
+  d3.select(this)
+   	    .style("fill", "purple");
+    
          Tooltip
         .html("Hotel Name" + d.Hotel_Name.toString() + "<br>" + "Score: " + d.Average_Score + "<br>" + "Adress: " + d.Hotel_Address.toString())
 	      // .style("left", (map.latLngToLayerPoint(d.Coordinates).x) + "px")
@@ -68,7 +71,12 @@ var showme = function(d) {
 	    	.style("top",  "520px")
         .style("background-color", "rgb("+(-d.Average_Score+10) * (-d.Average_Score+10)*30 +"," + (-d.Average_Score+5) * (-d.Average_Score+5)*20 + " , 0)");
     } 
-
+    
+    //onclick change the other sub graphs 
+    var click_hotel = function(d) {
+    console.log(d);
+    
+    }	
 // Select the svg area and add circles:
 d3.select("#mapid")
   .select("svg")
@@ -85,11 +93,9 @@ d3.select("#mapid")
     .attr("fill-opacity", .6)
     .on("mousemove", showme)
     .on("mouseover",in_circle)
-    .on("mouseleave",out_circle);
-      
-
-
-
+    .on("mouseleave",out_circle)
+    .on("click", click_hotel);
+    
 // Function that update circle position if something change
 function update() {
   d3.selectAll("circle")
