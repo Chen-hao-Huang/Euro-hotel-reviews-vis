@@ -67,7 +67,7 @@ var showme = function(d) {
    	    .style("fill", "purple")
         .style("cursor", "pointer");
   Tooltip
-        .html("Hotel Name" + d.Hotel_Name.toString() + "<br>" + "Score: " + d.Average_Score + "<br>" + "Adress: " + d.Hotel_Address.toString())
+        .html("Hotel Name: " + d.Hotel_Name.toString() + "<br>" + "Score: " + d.Average_Score + "<br>" + "Adress: " + d.Hotel_Address.toString())
 	      // .style("left", (map.latLngToLayerPoint(d.Coordinates).x) + "px")
 	    	// .style("top", (map.latLngToLayerPoint(d.Coordinates).y) + "px")
         .style("left", "0px")
@@ -81,7 +81,7 @@ var showme = function(d) {
     var click_hotel = function(d) {
       map.setView(d.Coordinates, map.getZoom()+2);
   
-    document.getElementById("hotel_info").innerHTML = ("Hotel Name" + d.Hotel_Name.toString() + "<br>" + "Score: " + d.Average_Score + "<br>" + "Adress: " + d.Hotel_Address.toString());
+    document.getElementById("hotel_info").innerHTML = ("Hotel Name: " + d.Hotel_Name.toString() + "<br>" + "Score: " + d.Average_Score + "<br>" + "Adress: " + d.Hotel_Address.toString());
 
     
 
