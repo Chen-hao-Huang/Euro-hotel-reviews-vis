@@ -61,7 +61,9 @@ var out_circle = function(d) {
     }	
 var showme = function(d) {
   d3.select(this)
-   	    .style("fill", "purple");
+   	    .style("fill", "purple")
+        .style("cursor", "pointer");
+
     
          Tooltip
         .html("Hotel Name" + d.Hotel_Name.toString() + "<br>" + "Score: " + d.Average_Score + "<br>" + "Adress: " + d.Hotel_Address.toString())
@@ -71,11 +73,10 @@ var showme = function(d) {
 	    	.style("top",  "520px")
         .style("background-color", "rgb("+(-d.Average_Score+10) * (-d.Average_Score+10)*30 +"," + (-d.Average_Score+5) * (-d.Average_Score+5)*20 + " , 0)");
     } 
-    
+
     //onclick change the other sub graphs 
     var click_hotel = function(d) {
     console.log(d);
-    
     }	
 // Select the svg area and add circles:
 d3.select("#mapid")
@@ -95,6 +96,7 @@ d3.select("#mapid")
     .on("mouseover",in_circle)
     .on("mouseleave",out_circle)
     .on("click", click_hotel);
+    
     
 // Function that update circle position if something change
 function update() {
