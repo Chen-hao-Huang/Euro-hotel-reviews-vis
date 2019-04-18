@@ -13,6 +13,8 @@
 <!-- Create an element where the map will take place -->
 <div id="mapid"></div>
 
+<h2 id="hotel_info"></h2>
+
 <style>
 #mapid { height: 600px; }
 svg {pointer-events:all;}
@@ -40,13 +42,13 @@ L.svg().addTo(map);
 //Add tooltip 
 var Tooltip = d3.select("#mapid")
       .append("div")
-	  .attr("id","mytooltip")
+	    .attr("id","mytooltip")
       .attr("class", "leaflet-pane leaflet-tooltip-pane")
       .style("opacity", 1)
       .style("background-color", "yellow")
       .style("border", "solid")
-      .style("border-width", "1px")
-      .style("border-radius", "10px")
+      .style("border-width", "0px")
+      .style("border-radius", "5px")
       .style("padding", "5px")
 	  
 var in_circle = function(d) {
@@ -64,7 +66,7 @@ var showme = function(d) {
   d3.select(this)
    	    .style("fill", "purple")
         .style("cursor", "pointer");
-         Tooltip
+  Tooltip
         .html("Hotel Name" + d.Hotel_Name.toString() + "<br>" + "Score: " + d.Average_Score + "<br>" + "Adress: " + d.Hotel_Address.toString())
 	      // .style("left", (map.latLngToLayerPoint(d.Coordinates).x) + "px")
 	    	// .style("top", (map.latLngToLayerPoint(d.Coordinates).y) + "px")
@@ -73,11 +75,16 @@ var showme = function(d) {
         .style("background-color", "rgb("+(-d.Average_Score+10) * (-d.Average_Score+10)*30 +"," + (-d.Average_Score+5) * (-d.Average_Score+5)*20 + " , 0)");
     } 
 
+   
 
     //onclick change the other sub graphs 
     var click_hotel = function(d) {
       map.setView(d.Coordinates, map.getZoom()+2);
-    console.log(map.getZoom());
+  
+    document.getElementById("hotel_info").innerHTML = ("Hotel Name" + d.Hotel_Name.toString() + "<br>" + "Score: " + d.Average_Score + "<br>" + "Adress: " + d.Hotel_Address.toString());
+
+    
+
     }	
 
 // Select the svg area and add circles:
