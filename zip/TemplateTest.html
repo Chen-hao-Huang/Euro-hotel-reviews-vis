@@ -65,7 +65,6 @@ function wordCloud(d, type) {
         cloud.enter()
             .append("text")
             .style("font-size", function(d) { return d.size + "px"; })
-            // .style("fill", function(d, i) { return fill(i); })
             .attr("transform", function(d) {
                 return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
             })
@@ -85,19 +84,16 @@ function wordCloud(d, type) {
             .attr("transform", function(d) {
                 return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
             })
-            .attr("text-anchor", "middle")
-            .style("fill-opacity", 1);
+            .attr("text-anchor", "middle");
 
         cloud.exit()
             .transition()
             .duration(500)
-            .style('fill-opacity', 1e-6)
-            .attr('font-size', 1)
             .remove();
     }
 
     return {
-        update: function(words) {
+        updateCloud(words) {
             d3.layout.cloud().size([width, height])
                 .words(words)
                 .padding(0)
@@ -110,18 +106,18 @@ function wordCloud(d, type) {
     }
 }
 
-function pos_review(vis, selected_hotel) {
-    var pos_data = Pos_Review[selected_hotel];
-    vis.update(pos_data);
-}
-
-function neg_review(vis, selected_hotel) {
-    var neg_data = Neg_Review[selected_hotel];
-    vis.update(neg_data);
-}
-
 var pos_cloud = wordCloud('body', "pos");
 var neg_cloud = wordCloud('body', "neg");
+	
+function pos_review(pos_cloud, selected_hotel) {
+    var pos_data = Pos_Review[selected_hotel];
+    pos_cloud.updateCloud(pos_data);
+}
+
+function neg_review(neg_cloud, selected_hotel) {
+    var neg_data = Neg_Review[selected_hotel];
+    neg_cloud.updateCloud(neg_data);
+}
 </script>
 
 <script>
