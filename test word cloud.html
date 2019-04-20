@@ -8,11 +8,15 @@
 <script src="http://d3js.org/d3.v4.js"></script>
 <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
 <script src="http://d3js.org/d3.v3.min.js"></script>
+
+<script src="http://d3js.org/d3.v5.min.js"></script>
+
 <script src="https://rawgit.com/jasondavies/d3-cloud/master/build/d3.layout.cloud.js"></script>
 <!-- Load Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin=""/>
 <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js" integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA==" crossorigin=""></script>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <!-- Bootstrap CSS -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -52,7 +56,7 @@ margin-top: 20px;
 </div>
 </div>
     <div class="row">
-        <div class="col-lg-2 col-sm-12 " style="margin-top:10%, margin-bottom:10%">
+        <div class="col-lg-2 col-sm-12 " style="margin-top:10%; margin-bottom:10%">
             <div class="card text-center">
                 <h5 class="card-header">Hotel Average Score</h5>
 
@@ -81,7 +85,7 @@ margin-top: 20px;
 ">
 <h2 id="Hotel_Name_display" ></h2>
 
-<h3 id="Hotel_Score_display"></h3>
+<h4 id="Hotel_Score_display"></h4>
 
 <p id="Hotel_Address_display"></p>
 </div>
@@ -90,14 +94,35 @@ margin-top: 20px;
 </div>
 </div>
 
-<div class="myCloud" style="text-align:center"></div>
+
+
+<!-- Footer -->
+<footer class="page-footer" style="background-color:gray">
+    <div class="container">
+        <div class="col-md-12 text-center" >
+          <h5 style="   color:white; padding-top: 10px;">COMPSCI 590V Data Visualization And Analysis - Spring 2018</h5>
+        </div>
+        <div class="row">
+
+        <!-- Grid column -->
+        <div class="col-md-12" >
+            <div class="mb-5 text-center">
+               
+                    <a href="https://github.com/aawwsed10/Euro-hotel-reviews-vis"style="color:#fbfac6;"><i class="fa fa-github" style="font-size:50px"></i> </a> 
+                  
+              </div>
+              </div>
+
+</div>
+</div>
+  </footer>
 </body>
 
 
 <style>
       
 #mapid { height: 500px;
-         width:900px;
+         width:100%;
 /* 		 margin-left:200px;*/
 		 float:left
 		 
@@ -117,6 +142,9 @@ margin-top: 20px;
 svg{pointer-events:all}
 label {
     margin: .4rem;
+}
+.card-header {
+    background-color: #fbfac6;
 }
 
 
@@ -215,34 +243,36 @@ var map = L.map( 'mapid', {
   minZoom: 5,
   zoom: 5
 })
-////////////////////
 
-////////////////////
 // Add a tile to the map = a background. Comes from OpenStreetmap
 L.tileLayer(
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
-    maxZoom: 22,
+    maxZoom: 17,
     }).addTo(map);
 // Add a svg layer to the map
 L.svg().addTo(map);
-/////////////////////
-
-    // This function is gonna change the opacity and size of selected and unselected circles
-   
-
-/////////////////////
   
+var dotColor = d3.scaleSequential(d3.interpolateRdYlGn)
+            .domain([6,10])
+            
 // get color from avg score
 var getColor  = function(Average_Score){
-  return ("rgb("+(-Average_Score+10) * (-Average_Score+10)*30 +", " + (-Average_Score+5) * (-Average_Score+5)*20 + ",0)")
+  return(dotColor(Average_Score));
+//   var Rcolors= [241,216, 142, 143,0,];
+//   var Bcolors= [227,187, 152, 184, 191,75,];
+
+//   var Gcolors= [243,240, 235, 237,237,255,];
+
+//   console.log((Rcolors[+Math.floor(Average_Score-6)] +Rcolors[Math.floor(Average_Score-6)+1])/10*(Average_Score- Math.floor(Average_Score)))
+// return ("rgb("+(Rcolors[+Math.floor(Average_Score-6)] +Rcolors[Math.floor(Average_Score-6)+1])/10*(Average_Score- Math.floor(Average_Score))+", " + (Bcolors[+Math.floor(Average_Score-6)] +Bcolors[Math.floor(Average_Score-6)+1])/10*(Average_Score- Math.floor(Average_Score))+","+(Gcolors[+Math.floor(Average_Score-6)] +Gcolors[Math.floor(Average_Score-6)+1])/10*(Average_Score- Math.floor(Average_Score))+")")
+
+// //  return ("rgb("+(-Average_Score+10) * (-Average_Score+10)*30 +", " + (-Average_Score+5) * (-Average_Score+5)*10 + ",0)")
 }
 
 // Select the svg area and add circles:
-
 var svg = d3.select("#mapid")
             .select("svg")
-			//////////////////////////////////
       
 var Tooltip = d3.select("#mapid")
       .append("div")
@@ -265,6 +295,10 @@ var out_circle = function(d) {
 	  d3.select(this)
         .attr("fill",  getColor(d.Average_Score));  }	
 var showme = function(d) {
+
+  d3.select(this)
+        .style("cursor", "pointer");
+
          Tooltip
         .html("Hotel Name: " + d.Hotel_Name.toString() + "<br>" + "Score: " + d.Average_Score + "<br>" + "Adress: " + d.Hotel_Address.toString())
 	    .style("left", 50 + "px")
@@ -285,8 +319,8 @@ svg.selectAll("mycircle")
      .attr("cx", function(d){  return map.latLngToLayerPoint(d.Coordinates).x })
      .attr("cy", function(d){  return map.latLngToLayerPoint(d.Coordinates).y })
      .attr("r", function(d){return 0.08*((+d.Total_Number_of_Reviews)/50+80)})
-     .attr("fill", function(d){ return getColor(d.Average_Score) })
-     .attr("stroke", "black")
+     .attr("fill", function(d){console.log(d); return getColor(d.Average_Score) })
+     .attr("stroke", "gray")
      .attr("stroke-width", 1)
      .attr("fill-opacity", .9)
    .on("mousemove", showme)
@@ -304,6 +338,7 @@ svg.selectAll("mycircle")
 
         
 	    });
+
 //////////////////////////////////////////////////////
     // This function is gonna change the opacity and size of selected and unselected circles
 function update_group(){
@@ -331,8 +366,6 @@ d3.selectAll(".checkbox").on("change",update_group)
 //update_group()
 
 
- // Tile type: openstreetmap normal
-
 
 
 ///////////////////////////////////////////
@@ -350,13 +383,13 @@ function update_circle() {
 map.on("moveend", update_circle)
 //map.on("moveend",update_tooltip)
 
-
+//bot right legend
 var legend = L.control({position: 'bottomright'});
 
 legend.onAdd = function (map) {
 
   var div = L.DomUtil.create('div', 'info legend'),
-    grades = [ 5, 6,6.5, 7,7.5,8,9,10],
+    grades = [  6,6.5, 7,7.5,8,8.5,9,9.5],
     labels = [],
     from, to;
 
@@ -365,8 +398,8 @@ legend.onAdd = function (map) {
     to = grades[i + 1];
 
     labels.push(
-      '<i style="background:' + getColor(from + 1) + '"></i> ' +
-      from + (to ? '&ndash;' + to : ''));
+      '<i style="background:' + getColor(from ) + '"></i> ' +
+      from );
   }
 
   div.innerHTML = labels.join('<br>');
