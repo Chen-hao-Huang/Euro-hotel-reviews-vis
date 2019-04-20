@@ -1,4 +1,5 @@
 Use hotel_data_test.csv and hotel_test.json in the data folder are used for designing right now.
+hotel_info_test.csv is the info of each of the hotels in the test dataset.
 
 Since we are changing dataset layout right now, I will update it at final. 
 
@@ -22,10 +23,9 @@ Visualizations to make:
  - avg&total reviews vs review month
 - (possibly) calendar vis of avg revew score per day/week
 - (possibly) D3 pie charts, word clouds (check proposed solutions)
- - Get .txt of list of words, not including stopwords
 
 Other:
-- Figure out how to implement filtering of the data to apply to all of the visualizations
+- Figure out how to implement filtering of the data to apply to all of the visualizations?
 
 *After making visualizations:
 Write-ups/presentation:
