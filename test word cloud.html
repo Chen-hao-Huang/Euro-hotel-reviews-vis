@@ -1,0 +1,266 @@
+<!-- Code from d3-graph-gallery.com -->
+<!DOCTYPE html>
+<html lang="en">
+	
+        <meta charset="utf-8">
+
+<!-- Load d3.js and the geo projection plugin -->
+<script src="http://d3js.org/d3.v4.js"></script>
+<script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="https://rawgit.com/jasondavies/d3-cloud/master/build/d3.layout.cloud.js"></script>
+<!-- Load Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js" integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA==" crossorigin=""></script>
+
+<!-- Create an element where the map will take place -->
+<body>
+<div id="mapid"> </div>
+<div style="float:left">
+<div style="width: 100px; text-align:center; color: black; background-color: pink; padding: 5px;margin-left:10px">  
+  <input type="checkbox" class="checkbox" value="A" checked><label><strong>score:9.0-10</strong></label>
+</div>
+
+<div style="width: 100px; text-align:center; color: black; background-color: pink; padding: 5px;margin-left:10px">
+  <input type="checkbox" class="checkbox" value="B" checked><label><strong>score:8.0-9.0</strong></label>
+</div>
+
+<div style="width: 100px; text-align:center; color: black; background-color: pink; padding: 5px;margin-left:10px">
+  <input type="checkbox" class="checkbox" value="C" checked><label><strong>score:7.0-8.0</strong></label>
+</div>
+<div style="width: 100px; text-align:center; color: black; background-color: pink; padding: 5px;margin-left:10px">
+  <input type="checkbox" class="checkbox" value="D" checked><label><strong>score:6.0-7.0</strong></label>
+</div>
+</div>
+
+<div class="myCloud" style="text-align:center"></div>
+</body>
+
+
+<style>
+      
+#mapid { height: 500px;
+         width:900px;
+		 margin-left:200px;
+		 float:left
+		 
+	 }
+svg{pointer-events:all}
+
+
+</style>
+
+<!-- <script type='text/javascript' src='data/Hotel_data_test.json'></script> -->
+<script type='text/javascript' src='data/Hotel_Reviews_clean_mapData.json'></script>
+<script type='text/javascript' src='data/Neg_Review.json'></script>
+<script type='text/javascript' src='data/Pos_Review.json'></script>
+
+
+<script>
+var color = d3.scale.linear()
+        .domain([0,1,2,3,4,5,6,10,15,20,100])
+        .range(["#222", "#333", "#444", "#555", "#666", "#777", "#888", "#999", "#aaa", "#bbb", "#ccc", "#ddd"]);
+
+function wordCloud(d, type) {
+    var fill = d3.scale.category20();
+    var width = 450;
+    var height = 350;
+
+    var svg = d3.select(".myCloud").append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", "translate("+(width / 2)+","+(height / 2)+")");
+
+    function draw(words) {
+        var cloud = svg.selectAll("g text")
+                    .data(words, function(d) { return d.text; })
+
+        cloud.enter()
+            .append("text")
+            .style("font-size", function(d) { return d.size + "px"; })
+            .attr("transform", function(d) {
+                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+            })
+            .attr("text-anchor", "middle")
+            .text(function(d) { return d.text; });
+
+        if (type === "pos") {
+            cloud.style("fill", function(d, i) { return fill(i); });
+        }
+        if (type === "neg") {
+            cloud.style("fill", function(d, i) { return color(i); });
+        }
+
+        cloud.transition()
+            .duration(1000)
+            .style("font-size", function(d) { return d.size + "px"; })
+            .attr("transform", function(d) {
+                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+            })
+            .attr("text-anchor", "middle");
+
+        cloud.exit()
+            .transition()
+            .duration(500)
+            .remove();
+    }
+
+    return {
+        updateCloud(words) {
+            d3.layout.cloud().size([width, height])
+                .words(words)
+                .padding(0)
+                .rotate(function() { return ~~(Math.random() * 2) * 90; })
+                .font("Impact")
+                .fontSize(function(d) { return d.size; })
+                .on("end", draw)
+                .start();
+        }
+    }
+}
+
+var pos_cloud = wordCloud("body", "pos");
+var neg_cloud = wordCloud("body", "neg");
+	
+function pos_review(pos_cloud, selected_hotel) {
+    var pos_data = Pos_Review[selected_hotel];
+    pos_cloud.updateCloud(pos_data);
+}
+
+function neg_review(neg_cloud, selected_hotel) {
+    var neg_data = Neg_Review[selected_hotel];
+    neg_cloud.updateCloud(neg_data);
+}
+</script>
+
+<script>
+// mapid is the id of the div where the map will appear
+
+var map = L.map( 'mapid', {
+  center: [50.0, 5.0],
+  minZoom: 5,
+  zoom: 5
+})
+////////////////////
+
+////////////////////
+// Add a tile to the map = a background. Comes from OpenStreetmap
+L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
+    maxZoom: 22,
+    }).addTo(map);
+// Add a svg layer to the map
+L.svg().addTo(map);
+/////////////////////
+
+    // This function is gonna change the opacity and size of selected and unselected circles
+   
+
+/////////////////////
+  
+// Select the svg area and add circles:
+
+var svg = d3.select("#mapid")
+            .select("svg")
+			//////////////////////////////////
+var Tooltip = d3.select("#mapid")
+      .append("div")
+	  .attr("id","mytooltip")
+      .attr("class", "leaflet-pane leaflet-tooltip-pane")
+      .style("opacity", 1)
+      .style("background-color", "#B0E0E6")
+      .style("border", "solid")
+      .style("border-width", "2px")
+      .style("border-radius", "10px")
+      .style("padding", "5px")
+	  
+var in_circle = function(d) {
+      Tooltip.style("opacity", 1)
+	  d3.select(this)
+   	    .attr("fill", "#6A5ACD");
+    }	
+var out_circle = function(d) {
+      Tooltip.style("opacity", 0)
+	  d3.select(this)
+        .attr("fill", "rgb("+(-d.Average_Score+10) * (-d.Average_Score+10)*30 +"," + (-d.Average_Score+5) * (-d.Average_Score+5)*20 + " , 0)");
+    }	
+var showme = function(d) {
+         Tooltip
+        .html("Hotel Name: " + d.Hotel_Name.toString() + "<br>" + "Score: " + d.Average_Score + "<br>" + "Adress: " + d.Hotel_Address.toString())
+	    .style("left", 50 + "px")
+
+		//(map.latLngToLayerPoint(d.Coordinates).x) + "px")
+		//.style("top", 400+ "px")
+	    
+    }
+/////////////////////////////////////	
+svg.selectAll("mycircle")
+   .data(hotels)
+   .enter()
+   .append("circle")
+     .attr("class" , function(d){ return d.group })
+     .attr("cx", function(d){  return map.latLngToLayerPoint(d.Coordinates).x })
+     .attr("cy", function(d){  return map.latLngToLayerPoint(d.Coordinates).y })
+     .attr("r", function(d){return 0.08*((+d.Total_Number_of_Reviews)/50+80)})
+     .attr("fill", function(d){ return "rgb("+(-d.Average_Score+10) * (-d.Average_Score+10)*30 +", " + (-d.Average_Score+5) * (-d.Average_Score+5)*20 + ",0)"   })
+     .attr("stroke", "black")
+     .attr("stroke-width", 1)
+     .attr("fill-opacity", .9)
+   .on("mousemove", showme)
+   .on("mouseover",in_circle)
+   .on("mouseleave",out_circle)
+   .on("click", function(d) { 
+    	console.log(d["Hotel_Name"]); 
+        pos_review(pos_cloud, d["Hotel_Name"]);
+        neg_review(neg_cloud, d["Hotel_Name"]);
+	    });
+//////////////////////////////////////////////////////
+    // This function is gonna change the opacity and size of selected and unselected circles
+function update_group(){
+
+      // For each check box:
+    d3.selectAll(".checkbox").each(function(d){
+        cb = d3.select(this);
+        grp = cb.property("value")
+
+        // If the box is check, I show the group
+        if(cb.property("checked")){
+          svg.selectAll("."+grp).transition().duration(1000).style("opacity", 1).attr("r", function(d){ return 0.08*((+d.Total_Number_of_Reviews)/50+80)} )
+
+        // Otherwise I hide it
+        }else{
+          svg.selectAll("."+grp).transition().duration(1000).style("opacity", 0).attr("r", 0)
+        }
+      })
+    }
+
+    // When a button change, I run the update function
+d3.selectAll(".checkbox").on("change",update_group)
+
+    // And I initialize it at the beginning
+//update_group()
+
+
+ // Tile type: openstreetmap normal
+
+
+
+///////////////////////////////////////////
+
+ 
+// Function that update circle position if something change
+function update_circle() {
+  d3.selectAll("circle")
+    .attr("cx", function(d){ return map.latLngToLayerPoint(d.Coordinates).x })
+    .attr("cy", function(d){ return map.latLngToLayerPoint(d.Coordinates).y })
+    
+}
+// If the user change the map (zoom or drag), I update circle position:
+
+map.on("moveend", update_circle)
+//map.on("moveend",update_tooltip)
+
+
+</script>
