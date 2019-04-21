@@ -349,20 +349,11 @@ function barChart(name){
 	var w = 400;
 	var h = 250;
 	
-	var xScale = d3.scaleBand()
-		.domain(d3.range(dataset.length))
-		.rangeRound([0, w])
-		.paddingInner(0.05);
-
-	var yScale = d3.scaleLinear()
-		.domain([0, d3.max(dataset)])
-		.range([0, h]);
-	
 	var svg = d3.select(".barChart").append("svg")
 		.attr("width",w)
 		.attr("height",h)
 		.append("g")
-        .attr("transform", "translate("+(width / 2)+","+(height / 2)+")");
+        .attr("transform", "translate("+(w / 2)+","+(h / 2)+")");
 		
 		
 var groupByNationality = d3.nest()
@@ -372,13 +363,22 @@ var groupByNationality = d3.nest()
      }})
   .object(hotelReviewByName[name]);
 
-  updateBars(groupByNationality)
+  draw(groupByNationality)
 
-  console.log(hotelReviewByName[name]);
-  console.log(groupByNationality);
+  //console.log(hotelReviewByName[name]);
+  //console.log(groupByNationality);
 	
 	// TODO: fix anything that doesn't make sense
-	function updateBar(data) {
+	function draw(dataset) {
+		var xScale = d3.scaleBand()
+			.domain(d3.range(dataset.length))
+			.rangeRound([0, w])
+			.paddingInner(0.05);
+
+		var yScale = d3.scaleLinear()
+			.domain([0, d3.max(dataset)])
+			.range([0, h]);
+	
 		svg.selectAll("rect")
 		   .data(dataset)
 		   .enter()
@@ -391,7 +391,7 @@ var groupByNationality = d3.nest()
 		   })
 		   .attr("width", xScale.bandwidth())
 		   .attr("height", function(d) {
-				return yScale(d);
+			   		return yScale(d);
 			})
 		   .attr("fill", function(d) {
 				return "rgb(0, 0, " + Math.round(d * 10) + ")";
