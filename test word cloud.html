@@ -346,30 +346,33 @@ u
 ///BAR CHARTS
 
 function barChart(name){
-	var w = 400;
+	var w = 500;
 	var h = 250;
 	
-	var svg = d3.select(".barChart").append("svg")
+	var svg = d3.select("#barchart").append("svg")
 		.attr("width",w)
 		.attr("height",h)
 		.append("g")
         .attr("transform", "translate("+(w / 2)+","+(h / 2)+")");
 		
-		
-var groupByNationality = d3.nest()
-  .key(function(d) {return d.Reviewer_Nationality; })
+// Copied from Pie Chart groupBy and altered
+var groupByRoomType = d3.nest()
+  .key(function(d) {return d.Room_Type; })
   .rollup(function(v) { return {
     count: v.length, avg: d3.mean(v, function(d) { return d.Reviewer_Score; })
      }})
   .object(hotelReviewByName[name]);
 
-  draw(groupByNationality)
+  // TODO: The dataset is in a completely different format, change input type
+  // x = room type, y = avg score (additional y axis for count)
+  
+  draw(groupByRoomType)
 
   //console.log(hotelReviewByName[name]);
-  //console.log(groupByNationality);
+  console.log(groupByRoomType);
 	
-	// TODO: fix anything that doesn't make sense
 	function draw(dataset) {
+	//console.log(dataset.length);
 		var xScale = d3.scaleBand()
 			.domain(d3.range(dataset.length))
 			.rangeRound([0, w])
