@@ -20,7 +20,7 @@
 
 <!-- Bootstrap CSS -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
+<link rel="icon" href="favicon.png" sizes="16x16">
 
 <!-- Create an element where the map will take place -->
 <body>
@@ -89,8 +89,15 @@ margin-top: 20px;
 
 <p id="Hotel_Address_display"></p>
 </div>
+
 <div class="myCloud" style="text-align:center"></div>
 
+<div class="col-lg-6"> 
+  <div id="piechart">  <i class="fa fa-headphones"style="color:rgb(166, 118, 29);font-size:30px"></i>Leisure trip<i class="fa fa-suitcase"style="color:rgb(102, 102, 102);font-size:30px"></i> Business trip
+    </div>
+  </div>
+  <div class="col-lg-12">
+</div>
 </div>
 </div>
 
@@ -147,6 +154,20 @@ label {
     background-color: #fbfac6;
 }
 
+.tooltippie1 {
+  background: #eee;
+  box-shadow: 0 0 5px #999999;
+  color: #333;
+  display: none;
+  font-size: 18px;
+  left: 130px;
+  padding: 10px;
+  position: absolute;
+  text-align: center;
+  top: 95px;
+  width: 80px;
+  z-index: 10;
+}
 
 
 </style>
@@ -155,12 +176,127 @@ label {
 <script type='text/javascript' src='data/Hotel_Reviews_clean_mapData.json'></script>
 <script type='text/javascript' src='data/Neg_Review.json'></script>
 <script type='text/javascript' src='data/Pos_Review.json'></script>
+<script type='text/javascript' src='data/Hotel_Reviews_clean_test_v2.json'></script>
+
+
 
 
 <script>
+
+
+var hotelReviewByName = d3.nest()
+  .key(function(d) {return d.Hotel_Name; })
+  .object(hotels_reviews);
+
+var hotelGroup = d3.nest()
+  .key(function(d) { return d.Hotel_Name; })
+  .object(hotels);
+
 var color = d3.scale.linear()
         .domain([0,1,2,3,4,5,6,10,15,20,100])
         .range(["#222", "#333", "#444", "#555", "#666", "#777", "#888", "#999", "#aaa", "#bbb", "#ccc", "#ddd"]);
+
+///PIE CHART
+var piecolor = d3.scaleOrdinal()
+  .domain(["a", "b", "c", "d", "e", "f"])
+  .range(d3.schemeDark2);
+
+  var Piewidth = 150
+      Pieheight = 150
+      Piemargin = 40
+      var piesvg = d3.select("#piechart")
+    .append("svg")
+      .attr("width", Piewidth)
+      .attr("height", Pieheight)
+    .append("g")
+      .attr("transform", "translate(" + Piewidth / 2 + "," + Pieheight / 2 + ")");
+
+      var Pieradius = Math.min(Piewidth, Pieheight) / 2 - Piemargin
+     var label = d3.arc()
+            .outerRadius(Pieradius)
+            .innerRadius(Pieradius - 80);
+function pieChart(name,type){
+
+
+  // The radius of the pieplot is half the width or half the height (smallest one).
+
+
+    if(type==1){
+var groupByTripType = d3.nest()
+  .key(function(d) {return d.Trip_Type; })
+  .rollup(function(v) { return {
+    count: v.length, avg: d3.mean(v, function(d) { return d.Reviewer_Score; })
+     }})
+  .object(hotelReviewByName[name]);
+
+  updatePie(groupByTripType) }else {
+    var groupByTripType = d3.nest()
+  .key(function(d) {return d.F; })
+  .rollup(function(v) { return {
+    count: v.length, avg: d3.mean(v, function(d) { return d.Reviewer_Score; })
+     }})
+  .object(hotelReviewByName[name]);
+
+  updatePie(groupByTripType) }
+   
+
+
+  console.log(hotelReviewByName[name]);
+  console.log(groupByTripType);
+
+}
+
+var tooltippie1 = d3.select('#piechart') 
+.append('div')  
+.attr('class', 'tooltip');
+tooltippie1.append('div')
+.attr('class', 'label');
+
+tooltippie1.append('div')  
+.attr('class', 'count'); 
+
+tooltippie1.append('div') // add divs to the tooltip defined above  
+  .attr('class', 'percent');
+  
+function updatePie(data) {
+
+// Compute the position of each group on the pie:
+var pie = d3.pie()
+  .value(function(d) { console.log(d);return d.value.count; })
+  .sort(function(a, b) { console.log(a) ; return d3.ascending(a.key, b.key);} ) // This make sure that group order remains the same in the pie chart
+var data_ready = pie(d3.entries(data))
+console.log(data_ready);
+
+
+// map to data
+var u = piesvg.selectAll("path")
+  .data(data_ready)
+
+// Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+u
+  .enter()
+  .append('path')
+  .merge(u)
+  .transition()
+  .duration(1000)
+  .attr('d', d3.arc()
+    .innerRadius(0)
+    .outerRadius(Pieradius)
+  )
+  .attr('fill', function(d){ return(piecolor(d.data.key)) })
+  .attr("stroke", "white")
+  .style("stroke-width", "2px")
+  .style("opacity", 1)
+ 
+                               
+// remove the group that is not present anymore
+u
+  .exit()
+  .remove()
+
+
+}
+
 
 function wordCloud(d, type) {
     var fill = d3.scale.category20();
@@ -319,7 +455,7 @@ svg.selectAll("mycircle")
      .attr("cx", function(d){  return map.latLngToLayerPoint(d.Coordinates).x })
      .attr("cy", function(d){  return map.latLngToLayerPoint(d.Coordinates).y })
      .attr("r", function(d){return 0.08*((+d.Total_Number_of_Reviews)/50+80)})
-     .attr("fill", function(d){console.log(d); return getColor(d.Average_Score) })
+     .attr("fill", function(d){return getColor(d.Average_Score) })
      .attr("stroke", "gray")
      .attr("stroke-width", 1)
      .attr("fill-opacity", .9)
@@ -328,14 +464,16 @@ svg.selectAll("mycircle")
    .on("mouseleave",out_circle)
    .on("click", function(d) { 
     	console.log(d["Hotel_Name"]); 
-      map.setView(d.Coordinates, map.getZoom()+2);
+        map.setView(d.Coordinates, map.getZoom()+2);
         pos_review(pos_cloud, d["Hotel_Name"]);
         neg_review(neg_cloud, d["Hotel_Name"]);
+        
         document.getElementById("Hotel_Name_display").innerHTML= ("Hotel Name: " + d.Hotel_Name.toString() )
-  //  document.getElementById("hotel_info").innerHTML = ("Hotel Name: " + d.Hotel_Name.toString() + "<br>" + "Score: " + d.Average_Score + "&#09"+"  Total Reviews: "+ d.Total_Number_of_Reviews.toString()+ "<br>" + "Adress: " + d.Hotel_Address.toString());
-    document.getElementById("Hotel_Score_display").innerHTML = ("Total Reviews: "+ d.Total_Number_of_Reviews.toString()+"&#09"+  " Average Score: " + d.Average_Score )
-    document.getElementById("Hotel_Address_display").innerHTML = "Adress: " + d.Hotel_Address.toString()+ "<hr>"
+        document.getElementById("Hotel_Score_display").innerHTML = ("Total Reviews: "+ d.Total_Number_of_Reviews.toString()+"&#09"+  " Average Score: " + d.Average_Score )
+        document.getElementById("Hotel_Address_display").innerHTML = "Adress: " + d.Hotel_Address.toString()+ "<hr>"
 
+        pieChart(d["Hotel_Name"],1)
+    
         
 	    });
 
@@ -408,6 +546,8 @@ legend.onAdd = function (map) {
 
 
 legend.addTo(map);
+
+
 
 
 
