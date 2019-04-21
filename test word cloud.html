@@ -425,7 +425,7 @@ var groupByRoomType = d3.nest()
 
 
 // POS WORD CLOUDS
-function wordCloud(d, type) {
+function posWordCloud(d) {
     var fill = d3.scale.category20();
     var width = 450;
     var height = 350;
@@ -447,7 +447,7 @@ function wordCloud(d, type) {
                 return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
             })
             .attr("text-anchor", "middle")
-	    .style("fill", function(d, i) { return fill(i); }
+      .style("fill", function(d, i) { return fill(i); }
             .text(function(d) { return d.text; });
 
         cloud.transition()
@@ -480,8 +480,8 @@ function wordCloud(d, type) {
 
 }
 
-var pos_cloud = wordCloud("body", "pos");
-	
+var pos_cloud = posWordCloud("body");
+  
 function pos_review(pos_cloud, selected_hotel) {
     var pos_data = Pos_Review[selected_hotel];
     pos_cloud.updateCloud(pos_data);
@@ -491,8 +491,8 @@ function pos_review(pos_cloud, selected_hotel) {
 var color = d3.scale.linear()
         .domain([0,1,2,3,4,5,6,10,15,20,100])
         .range(["#222", "#333", "#444", "#555", "#666", "#777", "#888", "#999", "#aaa", "#bbb", "#ccc", "#ddd"]);
-	
-function wordCloud(d, type) {
+  
+function negWordCloud(d) {
     var fill = d3.scale.category20();
     var width = 450;
     var height = 350;
@@ -514,7 +514,7 @@ function wordCloud(d, type) {
                 return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
             })
             .attr("text-anchor", "middle")
-	    .style("fill", function(d, i) { return color(i); }
+      .style("fill", function(d, i) { return color(i); }
             .text(function(d) { return d.text; });
 
         cloud.transition()
@@ -547,12 +547,13 @@ function wordCloud(d, type) {
 
 }
 
-var neg_cloud = wordCloud("body", "neg");
+var neg_cloud = negWordCloud("body");
 
 function neg_review(neg_cloud, selected_hotel) {
     var neg_data = Neg_Review[selected_hotel];
     neg_cloud.updateCloud(neg_data);
 }
+
 
 
 var svg_time = d3.select("#timechart"),
