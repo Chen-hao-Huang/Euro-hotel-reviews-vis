@@ -356,19 +356,19 @@ function barChart(name){
         .attr("transform", "translate("+(w / 2)+","+(h / 2)+")");
 		
 // Copied from Pie Chart groupBy and altered
-var groupByNationality = d3.nest()
-  .key(function(d) {return d.Reviewer_Nationality; })
+var groupByRoomType = d3.nest()
+  .key(function(d) {return d.Room_Type; })
   .rollup(function(v) { return {
     count: v.length, avg: d3.mean(v, function(d) { return d.Reviewer_Score; })
      }})
   .object(hotelReviewByName[name]);
 
-  draw(groupByNationality)
+  draw(groupByRoomType)
 
   //console.log(hotelReviewByName[name]);
-  //console.log(groupByNationality);
+  console.log(groupByRoomType);
 	
-	// TODO: The dataset is in a completely different format, either change input type or alter the draw function.
+	// TODO: The dataset is in a completely different format, either change input type or alter the draw function to account for it.
 	function draw(dataset) {
 	//console.log(dataset.length);
 		var xScale = d3.scaleBand()
