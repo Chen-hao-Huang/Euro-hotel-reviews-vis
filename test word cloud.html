@@ -90,6 +90,7 @@ margin-top: 20px;
 <p id="Hotel_Address_display"></p>
 </div>
 
+<h2 class="text-center">Positive Comments  |  Negative Comments</h2>
 <div class="myCloud" style="text-align:center"></div>
 
 <div class="col-lg-6"> 
@@ -302,6 +303,18 @@ u
 	var w = 400;
 	var h = 250;
 	
+	var xScale = d3.scaleBand()
+		.domain(d3.range(dataset.length))
+		.rangeRound([0, w])
+		.paddingInner(0.05);
+
+	var yScale = d3.scaleLinear()
+		.domain([0, d3.max(dataset)])
+		.range([0, h]);
+	
+	var svg = d3.select("").append("svg") //TODO: select where?
+		.attr("width",w)
+		.attr("height",h);
 }*/
 
 
