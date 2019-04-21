@@ -371,16 +371,16 @@ u
 ///BAR CHARTS
 
 function barChart(name){
-	var w = 400;
+	var w = 500;
 	var h = 250;
 	
-	var svg = d3.select(".barChart").append("svg")
+	var svg = d3.select("#barchart").append("svg")
 		.attr("width",w)
 		.attr("height",h)
 		.append("g")
         .attr("transform", "translate("+(w / 2)+","+(h / 2)+")");
 		
-		
+// Copied from Pie Chart groupBy and altered
 var groupByNationality = d3.nest()
   .key(function(d) {return d.Reviewer_Nationality; })
   .rollup(function(v) { return {
@@ -393,8 +393,9 @@ var groupByNationality = d3.nest()
   //console.log(hotelReviewByName[name]);
   //console.log(groupByNationality);
 	
-	// TODO: fix anything that doesn't make sense
+	// TODO: The dataset is in a completely different format, either change input type or alter the draw function.
 	function draw(dataset) {
+	//console.log(dataset.length);
 		var xScale = d3.scaleBand()
 			.domain(d3.range(dataset.length))
 			.rangeRound([0, w])
