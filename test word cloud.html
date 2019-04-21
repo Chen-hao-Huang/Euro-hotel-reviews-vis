@@ -424,13 +424,8 @@ var groupByRoomType = d3.nest()
 }
 
 
-///WORD CLOUDS
-var color = d3.scale.linear()
-        .domain([0,1,2,3,4,5,6,10,15,20,100])
-        .range(["#222", "#333", "#444", "#555", "#666", "#777", "#888", "#999", "#aaa", "#bbb", "#ccc", "#ddd"]);
-	
+// POS WORD CLOUDS
 function wordCloud(d, type) {
-
     var fill = d3.scale.category20();
     var width = 450;
     var height = 350;
@@ -452,15 +447,8 @@ function wordCloud(d, type) {
                 return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
             })
             .attr("text-anchor", "middle")
+	    .style("fill", function(d, i) { return fill(i); }
             .text(function(d) { return d.text; });
-
-        if (type === "pos") {
-          console.log(fill);
-            cloud.style("fill", function(d, i) { return fill(i); });
-        }
-        if (type === "neg") {
-            cloud.style("fill", function(d, i) { return color(i); });
-        }
 
         cloud.transition()
             .duration(1000)
@@ -493,18 +481,78 @@ function wordCloud(d, type) {
 }
 
 var pos_cloud = wordCloud("body", "pos");
-var neg_cloud = wordCloud("body", "neg");
 	
 function pos_review(pos_cloud, selected_hotel) {
     var pos_data = Pos_Review[selected_hotel];
     pos_cloud.updateCloud(pos_data);
 }
 
+// NEG WORD CLOUDS
+var color = d3.scale.linear()
+        .domain([0,1,2,3,4,5,6,10,15,20,100])
+        .range(["#222", "#333", "#444", "#555", "#666", "#777", "#888", "#999", "#aaa", "#bbb", "#ccc", "#ddd"]);
+	
+function wordCloud(d, type) {
+    var fill = d3.scale.category20();
+    var width = 450;
+    var height = 350;
+
+    var svg = d3.select(".myCloud").append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", "translate("+(width / 2)+","+(height / 2)+")");
+
+    function draw(words) {
+        var cloud = svg.selectAll("g text")
+                    .data(words, function(d) { return d.text; })
+
+        cloud.enter()
+            .append("text")
+            .style("font-size", function(d) { return d.size + "px"; })
+            .attr("transform", function(d) {
+                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+            })
+            .attr("text-anchor", "middle")
+	    .style("fill", function(d, i) { return color(i); }
+            .text(function(d) { return d.text; });
+
+        cloud.transition()
+            .duration(1000)
+            .style("font-size", function(d) { return d.size + "px"; })
+            .attr("transform", function(d) {
+                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+            })
+            .attr("text-anchor", "middle");
+
+        cloud.exit()
+            .transition()
+            .duration(500)
+            .remove();
+    }
+
+    return {
+        updateCloud(words) {
+            d3.layout.cloud().size([width, height])
+                .words(words)
+                .padding(0)
+                .rotate(function() { return ~~(Math.random() * 2) * 90; })
+                .font("Impact")
+                .fontSize(function(d) { return d.size; })
+                .on("end", draw)
+                .start();
+        }
+    }
+
+
+}
+
+var neg_cloud = wordCloud("body", "neg");
+
 function neg_review(neg_cloud, selected_hotel) {
     var neg_data = Neg_Review[selected_hotel];
     neg_cloud.updateCloud(neg_data);
 }
-
 
 
 var svg_time = d3.select("#timechart"),
