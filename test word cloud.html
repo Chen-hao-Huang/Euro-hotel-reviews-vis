@@ -285,10 +285,6 @@ var piecolor = d3.scaleOrdinal()
             .innerRadius(Pieradius - 80);
 			
 function pieChart(name,type){
-
-  // The radius of the pieplot is half the width or half the height (smallest one).
-
-    
 var groupByTripType = d3.nest()
   .key(function(d) {return d.Trip_Type; })
   .rollup(function(v) { return {
@@ -304,22 +300,28 @@ var groupByTripType = d3.nest()
 
 
   console.log(hotelReviewByName[name]);
-  console.log(groupByTripType["Business Trip"]);
 
 
 }
 
-var tooltippie1 = d3.select('#piechart') 
-.append('div')  
-.attr('class', 'tooltip');
-tooltippie1.append('div')
-.attr('class', 'label');
 
-tooltippie1.append('div')  
-.attr('class', 'count'); 
 
-tooltippie1.append('div') // add divs to the tooltip defined above  
-  .attr('class', 'percent');
+function scoreByMonth(name){
+var groupByTripType = d3.nest()
+  .key(function(d) {return d.Review_Date; })
+  .rollup(function(v) { return {
+    count: v.length, avg: d3.mean(v, function(d) { return d.Avg_Score_Per_Month; })
+     }})
+  .object(hotelReviewByName[name]);
+
+  
+
+  console.log(groupByTripType);
+
+
+}
+
+
   
 function updatePie(data) {
 
@@ -628,6 +630,7 @@ svg.selectAll("mycircle")
         document.getElementById("Hotel_Address_display").innerHTML = "Adress: " + d.Hotel_Address.toString()+ "<hr>"
 
         pieChart(d["Hotel_Name"],1)
+        scoreByMonth(d["Hotel_Name"])
     
         
 	    });
