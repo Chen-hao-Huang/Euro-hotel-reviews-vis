@@ -232,6 +232,24 @@ body {
 }
 
 
+.axis path,
+.axis line, 
+.axis1 path,
+.axis1 line {
+  fill: none;
+  stroke: #E6E7E8;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path, .x.axis1 path {
+  display: none;
+}
+
+.line {
+  fill: none;
+  stroke-width: 1.5px;
+}
+
 </style>
 
 <!-- <script type='text/javascript' src='data/Hotel_data_test.json'></script> -->
@@ -297,8 +315,6 @@ var groupByTripType = d3.nest()
   document.getElementById("Business").innerHTML= ("Business Trip: " + groupByTripType["Business trip"]["count"].toString() +"   ("+Math.round(  groupByTripType["Business trip"]["count"]/total*100)+"%)" )
 
 
-  console.log(hotelReviewByName[name]);
-  console.log(groupByTripType["Business Trip"]);
 
 
 }
@@ -506,17 +522,53 @@ function neg_review(neg_cloud, selected_hotel) {
 }
 
 
+var width_time = 300,
+    height_time = 300;
+var svg_time = d3.select("#timechart").append("svg") .attr("width", width_time)
+      .attr("height", height_time+100),
+    margin_time = {top: 20, right: 20, bottom: 30, left: 40};
 
-var svg_time = d3.select("#timechart"),
-    margin_time = {top: 20, right: 20, bottom: 30, left: 40},
-    width_time = +svg_time.attr("width") - margin_time.left - margin_time.right,
-    height_time = +svg_time.attr("height") - margin_time.top - margin_time.bottom;
+ 
     
+console.log(width_time)
 
   
-var line_time = d3.line()
+
+
+function  updateTimeChart(groupByMonth){
+
+
+  var line_time = d3.line()
     .x(function(d) { return x(d.date); })
     .y(function(d) { return y(d.avg); });
+
+
+    var max1 = null;
+var min1 = null;
+var max = null;
+var min = null;
+
+
+var keys = Object.keys(groupByMonth)
+keys.forEach(function(key,value){
+  var current = groupByMonth[key];
+
+  if (max === null || current["date"] > max["date"]) {
+    max = current;
+  }
+  if (max1 === null || current["avg"] > max1["avg"]) {
+    max1 = current;
+  }
+  if (min === null || current["date"] < min["date"]) {
+    min = current;
+  }
+  
+  if (min1 === null || current["avg"] < min1["avg"]) {
+    min1 = current;
+  }
+  })
+
+
 
 
 var x_time = d3.scaleTime().range([0, width_time]);
@@ -524,74 +576,42 @@ var y_time = d3.scaleLinear().range([height_time, 0]);
 
 var g_time = svg_time.append("g")
     .attr("transform", "translate(" + margin_time.left + "," + margin_time.top + ")");
+  
+  var dif =   max["date"][3];
 
 
-
-function  updateTimeChart(groupByMonth){
-
-
-  x_time.domain(d3.extent(groupByMonth, function(d) { return d.date; }));
-    y_time.domain([d3.min(groupByMonth, function(d) { return d.avg; }) / 1.005, d3.max(groupByMonth, function(d) { return d.avg; }) * 1.005]);
-
-
+  x_time.domain([min["date"],max["date"]]);
+  console.log( dif);
+    y_time.domain([min1["avg"],max1["avg"]]);
 
 
     g_time.append("g")
         .attr("class", "axis axis--x")
-        .attr("transform", "translate(0," + height_time + ")")
-        .call(d3.axisBottom(x_time));
+        .attr("transform", "translate(0," + (height_time) + ")")
+        .call(d3.axisBottom().scale(x_time).ticks(4));
+
+        // .text("Date");
+
 
     g_time.append("g")
         .attr("class", "axis axis--y")
-        .call(d3.axisLeft(y_time).ticks(6).tickFormat(function(d) { return parseInt(d / 1000) + "k"; }))
-      .append("text")
+        .call(d3.axisLeft(y_time))
+        .append("text")
         .attr("class", "axis-title")
         .attr("transform", "rotate(-90)")
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
         .attr("fill", "#5D6971")
-        .text("Population)");
+        // .text("Score");
 
     g_time.append("path")
         .datum(groupByMonth)
         .attr("class", "line")
         .attr("d", line_time);
 
-    var focus = g_time.append("g")
-        .attr("class", "focus")
-        .style("display", "none");
-
-    focus.append("line")
-        .attr("class", "x-hover-line hover-line")
-        .attr("y1", 0)
-        .attr("y2", height_time);
-
-    focus.append("line")
-        .attr("class", "y-hover-line hover-line")
-        .attr("x1", width_time)
-        .attr("x2", width_time);
-
-    focus.append("circle1")
-        .attr("r", 7.5);
-
-    focus.append("text")
-        .attr("x", 15)
-      	.attr("dy", ".31em");
-
-    svg_time.append("rect")
-        .attr("transform", "translate(" + margin_time.left + "," + margin_time.top + ")")
-        .attr("class", "overlay")
-        .attr("width", width_time)
-        .attr("height", height_time)
-        .on("mouseover", function() { focus.style("display", null); })
-        .on("mouseout", function() { focus.style("display", "none"); })
-        // .on("mousemove", mousemove);
-
-    console.log(x_time) 
-
   };
-
+//https://bl.ocks.org/alandunning/cfb7dcd7951826b9eacd54f0647f48d3
     
 
 function timeChart(name){
