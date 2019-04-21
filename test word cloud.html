@@ -50,7 +50,7 @@
 <div class=" text-center" style="
 margin-top: 20px;
 ">
- 
+<!--Title-->
   <h1>Trends in European Hotel Reviews  </h1>
   <hr>
 </div>
@@ -82,6 +82,7 @@ margin-top: 20px;
       </div>
 
     </div>
+<!--Hotel Info-->
 <div class="text-center" style="
 margin-top: 20px;
 ">
@@ -91,6 +92,8 @@ margin-top: 20px;
 
 <p id="Hotel_Address_display"></p>
 </div>
+
+<h2 class="text-center">Positive Comments  |  Negative Comments</h2>
 
 <div class ="row">
 <div class="col-md-6 text-center" >
@@ -102,6 +105,8 @@ margin-top: 20px;
     <h4 id="NegativeComments"></h4>
   </div>
 </div>
+
+<!--Word Clouds-->
 <div class="myCloud" style="text-align:center"></div>
 
 
@@ -117,7 +122,11 @@ margin-top: 20px;
     </div>
     
 <div class="col-lg-6 text-center"> 
-    
+<!--Bar Charts-->
+<div class="barChart"></div>
+
+<div class="col-lg-6 text-center"> 
+<!--Pie Charts-->
   <div  id="piechart">   </div>
   <div class="text-center"> 
       <p style="color:#66a61d;" id="Leisure"> </p>
@@ -385,10 +394,6 @@ var groupByNationality = d3.nest()
   .object(hotelReviewByName[name]);
 
   updateBars(groupByNationality)
-  var total = groupByNationality["Leisure trip"]["count"]+ groupByTripType["Business trip"]["count"]
-  document.getElementById("Leisure").innerHTML= ("Leisure Trip: " + groupByTripType["Leisure trip"]["count"].toString() +"   ("+Math.round(  groupByTripType["Leisure trip"]["count"]/total*100)+"%)" )
-  document.getElementById("Business").innerHTML= ("Business Trip: " + groupByTripType["Business trip"]["count"].toString() +"   ("+Math.round(  groupByTripType["Business trip"]["count"]/total*100)+"%)" )
-
 
   console.log(hotelReviewByName[name]);
   console.log(groupByNationality);
@@ -440,6 +445,11 @@ var groupByNationality = d3.nest()
 					
 		   })
 	}*/
+	
+	function updateBar(data) {
+// TODO
+
+}
 }
 
 
