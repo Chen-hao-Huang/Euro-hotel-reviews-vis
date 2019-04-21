@@ -215,11 +215,10 @@ var piecolor = d3.scaleOrdinal()
      var label = d3.arc()
             .outerRadius(Pieradius)
             .innerRadius(Pieradius - 80);
+			
 function pieChart(name,type){
 
-
   // The radius of the pieplot is half the width or half the height (smallest one).
-
 
     if(type==1){
 var groupByTripType = d3.nest()
@@ -298,6 +297,16 @@ u
 }
 
 
+///BAR CHARTS
+
+/*function barChart(, ){
+	var w = 400;
+	var h = 250;
+	
+}*/
+
+
+///WORD CLOUDS
 function wordCloud(d, type) {
     var fill = d3.scale.category20();
     var width = 450;
