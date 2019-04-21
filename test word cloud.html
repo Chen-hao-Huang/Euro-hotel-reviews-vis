@@ -447,7 +447,7 @@ function posWordCloud(d) {
                 return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
             })
             .attr("text-anchor", "middle")
-      .style("fill", function(d, i) { return fill(i); }
+      	    .style("fill", function(d, i) { return fill(i); })
             .text(function(d) { return d.text; });
 
         cloud.transition()
@@ -514,7 +514,7 @@ function negWordCloud(d) {
                 return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
             })
             .attr("text-anchor", "middle")
-      .style("fill", function(d, i) { return color(i); }
+            .style("fill", function(d, i) { return color(i); })
             .text(function(d) { return d.text; });
 
         cloud.transition()
