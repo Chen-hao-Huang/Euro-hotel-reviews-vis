@@ -69,6 +69,8 @@ margin-top: 20px;
                     <input type="checkbox" class="checkbox" value="C" checked><label><strong> 7.0-8.0</strong></label>
                     <br>
                     <input type="checkbox" class="checkbox" value="D" checked><label><strong> 6.0-7.0</strong></label>
+                    <br>
+                    <input type="checkbox" class="checkbox" value="E" checked><label><strong> 5.0-6.0</strong></label>
 
                   </div>
                
@@ -90,9 +92,30 @@ margin-top: 20px;
 <p id="Hotel_Address_display"></p>
 </div>
 
-<h2 class="text-center">Positive Comments  |  Negative Comments</h2>
+<div class ="row">
+<div class="col-md-6 text-center" >
+    <h4 id="PositiveComments"></h4>
+    </div>
+
+    <div class="col-md-6 text-center" >
+
+    <h4 id="NegativeComments"></h4>
+  </div>
+</div>
 <div class="myCloud" style="text-align:center"></div>
 
+
+<div class ="row">
+    <div class="col-md-6 text-center" >
+        <h4 id="PieComments"></h4>
+        </div>
+    
+        <div class="col-md-6 text-center" >
+    
+        <h4 id="NegativeComments"></h4>
+      </div>
+    </div>
+    
 <div class="col-lg-6 text-center"> 
     
   <div  id="piechart">   </div>
@@ -164,12 +187,13 @@ label {
     font-size: 2.5rem;
 }
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+  margin-top:.5rem;
     margin-bottom: .5rem;
     font-weight: 500;
     line-height: 1.2;
 }
 h1, h2, h3, h4, h5, h6 {
-    margin-top: 0;
+  margin-top:.5rem;
     margin-bottom: .5rem;
 }
 *, ::after, ::before {
@@ -257,7 +281,7 @@ function pieChart(name,type){
 
   // The radius of the pieplot is half the width or half the height (smallest one).
 
-    if(type==1){
+    
 var groupByTripType = d3.nest()
   .key(function(d) {return d.Trip_Type; })
   .rollup(function(v) { return {
@@ -265,15 +289,8 @@ var groupByTripType = d3.nest()
      }})
   .object(hotelReviewByName[name]);
 
-  updatePie(groupByTripType) }else {
-    var groupByTripType = d3.nest()
-  .key(function(d) {return d.F; })
-  .rollup(function(v) { return {
-    count: v.length, avg: d3.mean(v, function(d) { return d.Reviewer_Score; })
-     }})
-  .object(hotelReviewByName[name]);
-
-  updatePie(groupByTripType) }
+  updatePie(groupByTripType)
+  
   var total = groupByTripType["Leisure trip"]["count"]+ groupByTripType["Business trip"]["count"]
   document.getElementById("Leisure").innerHTML= ("Leisure Trip: " + groupByTripType["Leisure trip"]["count"].toString() +"   ("+Math.round(  groupByTripType["Leisure trip"]["count"]/total*100)+"%)" )
   document.getElementById("Business").innerHTML= ("Business Trip: " + groupByTripType["Business trip"]["count"].toString() +"   ("+Math.round(  groupByTripType["Business trip"]["count"]/total*100)+"%)" )
@@ -417,6 +434,8 @@ function wordCloud(d, type) {
                 .start();
         }
     }
+
+
 }
 
 var pos_cloud = wordCloud("body", "pos");
@@ -456,6 +475,9 @@ var dotColor = d3.scaleSequential(d3.interpolateRdYlGn)
             
 // get color from avg score
 var getColor  = function(Average_Score){
+  if(Average_Score =="<6"){
+    Average_Score = 6;
+  }
   return(dotColor(Average_Score));
 }
 
@@ -510,8 +532,8 @@ svg.selectAll("mycircle")
      .attr("r", function(d){return 0.08*((+d.Total_Number_of_Reviews)/50+80)})
      .attr("fill", function(d){return getColor(d.Average_Score) })
      .attr("stroke", "gray")
-     .attr("stroke-width", 1)
-     .attr("fill-opacity", .9)
+     .attr("stroke-width", 1.5)
+    //  .attr("fill-opacity", .9)
    .on("mousemove", showme)
    .on("mouseover",in_circle)
    .on("mouseleave",out_circle)
@@ -521,6 +543,11 @@ svg.selectAll("mycircle")
         pos_review(pos_cloud, d["Hotel_Name"]);
         neg_review(neg_cloud, d["Hotel_Name"]);
         
+        
+    document.getElementById("PositiveComments").innerHTML= ("PositiveComments"  )
+    document.getElementById("NegativeComments").innerHTML= ("NegativeComments "  )
+    document.getElementById("PieComments").innerHTML= ("PieComments"  )
+
         document.getElementById("Hotel_Name_display").innerHTML= ("Hotel Name: " + d.Hotel_Name.toString() )
         document.getElementById("Hotel_Score_display").innerHTML = ("Total Reviews: "+ d.Total_Number_of_Reviews.toString()+"&#09"+  " Average Score: " + d.Average_Score )
         document.getElementById("Hotel_Address_display").innerHTML = "Adress: " + d.Hotel_Address.toString()+ "<hr>"
@@ -580,9 +607,9 @@ var legend = L.control({position: 'bottomright'});
 legend.onAdd = function (map) {
 
   var div = L.DomUtil.create('div', 'info legend'),
-    grades = [  6,6.5, 7,7.5,8,8.5,9,9.5],
+    grades = [  "<6",6.5, 7,7.5,8,8.5,9,9.5],
     labels = [],
-    from, to;
+    from, to ;
 
   for (var i = 0; i < grades.length; i++) {
     from = grades[i];
