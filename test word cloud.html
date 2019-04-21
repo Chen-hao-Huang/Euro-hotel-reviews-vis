@@ -254,10 +254,6 @@ var hotelGroup = d3.nest()
   .key(function(d) { return d.Hotel_Name; })
   .object(hotels);
 
-var color = d3.scale.linear()
-        .domain([0,1,2,3,4,5,6,10,15,20,100])
-        .range(["#222", "#333", "#444", "#555", "#666", "#777", "#888", "#999", "#aaa", "#bbb", "#ccc", "#ddd"]);
-
 ///PIE CHART
 var piecolor = d3.scaleOrdinal()
   .domain([ "c", "d", "e", "f"])
@@ -429,6 +425,10 @@ var groupByRoomType = d3.nest()
 
 
 ///WORD CLOUDS
+var color = d3.scale.linear()
+        .domain([0,1,2,3,4,5,6,10,15,20,100])
+        .range(["#222", "#333", "#444", "#555", "#666", "#777", "#888", "#999", "#aaa", "#bbb", "#ccc", "#ddd"]);
+	
 function wordCloud(d, type) {
 
     var fill = d3.scale.category20();
