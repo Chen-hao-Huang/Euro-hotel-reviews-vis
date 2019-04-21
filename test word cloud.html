@@ -363,12 +363,14 @@ var groupByRoomType = d3.nest()
      }})
   .object(hotelReviewByName[name]);
 
+  // TODO: The dataset is in a completely different format, change input type
+  // x = room type, y = avg score (additional y axis for count)
+  
   draw(groupByRoomType)
 
   //console.log(hotelReviewByName[name]);
   console.log(groupByRoomType);
 	
-	// TODO: The dataset is in a completely different format, either change input type or alter the draw function to account for it.
 	function draw(dataset) {
 	//console.log(dataset.length);
 		var xScale = d3.scaleBand()
