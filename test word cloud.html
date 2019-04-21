@@ -230,20 +230,6 @@ h1 {
 body {
   color: #5B779F;
 }
-.tooltippie1 {
-  background: #eee;
-  box-shadow: 0 0 5px #999999;
-  color: #333;
-  display: none;
-  font-size: 18px;
-  left: 130px;
-  padding: 10px;
-  position: absolute;
-  text-align: center;
-  top: 95px;
-  width: 80px;
-  z-index: 10;
-}
 
 
 </style>
@@ -317,17 +303,6 @@ var groupByTripType = d3.nest()
 
 }
 
-var tooltippie1 = d3.select('#piechart') 
-.append('div')  
-.attr('class', 'tooltip');
-tooltippie1.append('div')
-.attr('class', 'label');
-
-tooltippie1.append('div')  
-.attr('class', 'count'); 
-
-tooltippie1.append('div') // add divs to the tooltip defined above  
-  .attr('class', 'percent');
   
 function updatePie(data) {
 
@@ -527,7 +502,30 @@ function neg_review(neg_cloud, selected_hotel) {
     var neg_data = Neg_Review[selected_hotel];
     neg_cloud.updateCloud(neg_data);
 }
+
+
+var timesvg = d3.select("#timechart"),
+    margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = +timesvg.attr("width") - margin.left - margin.right,
+    height = +timesvg.attr("height") - margin.top - margin.bottom;
+    
+
+var timeChart = function timeChart(name){
+var groupByMonth = d3.nest()
+  .key(function(d) {return d.Review_Date; })
+  .rollup(function(v) { return {
+    count: v.length, avg: d3.mean(v, function(d) { return d.Avg_Score_Per_Month; })
+     }})
+  .object(hotelReviewByName[name]);
+
+  console.log(groupByMonth)
+}
+
+
+
+
 </script>
+
 
 <script>
 // mapid is the id of the div where the map will appear
@@ -631,7 +629,8 @@ svg.selectAll("mycircle")
 
         pieChart(d["Hotel_Name"],1)
 		barChart(d["Hotel_Name"])
-    
+
+    timeChart(d["Hotel_Name"])
         
 	    });
 
