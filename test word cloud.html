@@ -420,6 +420,7 @@ function barChart(name){
 	
 					
 	var maxAvg = null
+	var maxCt = null
 	var minAvg = null
 	var data = []
 	
@@ -429,7 +430,7 @@ function barChart(name){
 
 	var current = groupByRoomType[key];
 	categoryAvg = current["avg"]
-	data.push([key,current["avg"],current["count"]])
+	data.push([key,categoryAvg,current["count"]])
 
 	if (maxAvg === null || categoryAvg > maxAvg) {
 		maxAvg = categoryAvg;
@@ -437,39 +438,34 @@ function barChart(name){
 	if (minAvg === null || categoryAvg < minAvg) {
 		minAvg = categoryAvg;
 	}
+	categoryCt = current["count"]
+	if (maxCt === null || categoryCt > maxCt) {
+		maxCt = categoryCt;
+	}
 	})
 
 	
-	console.log(typeof minAvg);
-	console.log(maxAvg);
+	//console.log(typeof minAvg);
+	//console.log(maxAvg);
 
 	var xScale = d3.scaleBand()
 					.domain(d3.range(data.length))
 					.rangeRound([0, barW])
 					.paddingInner(0.05);
 
-	var yScale = d3.scaleLinear()
-					.domain([0,maxAvg])
+	var yScale1 = d3.scaleLinear()
+					.domain([0,maxAvg+1])
 					.range([0, barH]);
 					
-	console.log(groupByRoomType);
+	var yScale2 = d3.scaleLinear()
+					.domain([0,maxCt+1])
+					.range([0, barH]);
+					
+	//console.log(groupByRoomType);
 	
-	
-	svg1.selectAll("circle")
-	   .data(data)
-	   .enter()
-	   .append("circle")
-	   .attr('cx', function(d, i) {
-			return xScale(i);
-	   })
-	    .attr("cy", function(d) {
-			return  barH - yScale(d[1]);
-	   })
-	   .attr('r',4)
-	   ;
 
 	//Create bars
-	svg1.selectAll("rect")
+	svg1.selectAll("rect") // bar chart for averages
 	   .data(data)
 	   .enter()
 	   .append("rect")
@@ -477,15 +473,15 @@ function barChart(name){
 			return xScale(i);
 	   })
 	   .attr("y", function(d) {
-			return  barH - yScale(d[1]);
+			return  barH - yScale1(d[1]);
 	   })
 	   .attr("width", xScale.bandwidth())
 	   .attr("height", function(d) {
-			return yScale(d[1]);
+			return yScale1(d[1]);
 	   })
 	   .attr("fill", function(d) {
 			return getColor(d[1]);
-	   })
+	   });/*
 	   .on("mouseover", function(d) {
 
 			//Get this bar's x/y values, then augment for the tooltip
@@ -508,147 +504,22 @@ function barChart(name){
 			//Hide the tooltip
 			d3.select("#tooltip").classed("hidden", true);
 			
-	   })
-	   .on("click", function() {
-			sortBars();
-	   });
-
-	//Define sort order flag
-	var sortOrder = false;
-	
-	//Define sort function
-	var sortBars = function() {
-
-		//Flip value of sortOrder
-		sortOrder = !sortOrder;
-
-		svg.selectAll("rect")
-		   .sort(function(a, b) {
-				if (sortOrder) {
-					return d3.ascending(a, b);
-				} else {
-					return d3.descending(a, b);
-				}
-			})
-		   .transition()
-		   .delay(function(d, i) {
-			   return i * 50;
-		   })
-		   .duration(1000)
-		   .attr("x", function(d, i) {
-				return xScale(i);
-		   });
-
-	};
-
-	
-	/*
-	var w = 500;
-	var h = 250;
-	
-	var svg_bar = d3.select("#barchart").append("svg")
-		.attr("width",w)
-		.attr("height",h);
-		/*
-		.append("g")
-        .attr("transform", "translate("+(w / 2)+","+(h / 2)+")");
-		
-		
-	// Copied from Pie Chart groupBy and altered
-	var groupByRoomType = d3.nest()
-		.key(function(d) {return d.Room_Type; })
-		.rollup(function(v) { return {
-			count: v.length, avg: d3.mean(v, function(d) { return d.Reviewer_Score; })
-		}})
-		.object(hotelReviewByName[name]);
-  
-  
-  var count = 0;
-  for(var rt in groupByRoomType) {
-	count += 1;
-	}
-
-  // TODO: The dataset is in a completely different format than in the sample code
-  // x = room type, y = avg score (additional y axis for count)
-  //console.log(count)
-  
-  var maxAvg = null
-  var minAvg = null
-  //var data = []
-  
-  var keys = Object.keys(groupByRoomType)
-	keys.forEach(function(key,value){
-
-	var current = groupByRoomType[key];
-	categoryAvg = current["avg"]
-	//data.push([mo,current["avg"] ])
-
-	if (maxAvg === null || categoryAvg > maxAvg) {
-		maxAvg = categoryAvg;
-	}
-	if (minAvg === null || categoryAvg < minAvg) {
-		minAvg = categoryAvg;
-	}
-	})
-
-  //console.log(hotelReviewByName[name]);
-  console.log(groupByRoomType);
-	
-	var xScale = d3.scaleBand()
-		.domain(d3.range(count))
-		.rangeRound([0, w])
-		.paddingInner(0.05);
-
-	var yScale = d3.scaleLinear()
-		.domain([minAvg-1, maxAvg])
-		.range([0, h]);
-		
-	console.log("starting to draw bar chart...");
-	svg_bar.selectAll("rect")
-	   .data(groupByRoomType)
+	   });*/
+	   
+	   // Create Dots
+	   svg1.selectAll("circle") // Dot plot for counts
+	   .data(data)
 	   .enter()
-	   .append("rect")
-	   .attr("x", function(d, i) {
-			//console.log(d);
-			return xScale(i);
+	   .append("circle")
+	   .attr('cx', function(d, i) {
+			return xScale(i) + xScale.bandwidth()/2;
 	   })
-	   .attr("y", function(d) {
-			return h - yScale(d["avg"]);
+	    .attr("cy", function(d) {
+			return  barH - yScale2(d[2]);
 	   })
-	   .attr("width", xScale.bandwidth())
-	   .attr("height", function(d) {
-				return yScale(d["avg"]);
-		})
-	   .attr("fill", function(d) {
-			//console.log("test");
-			return "rgb(0, 0, " + Math.round(d["avg"] * 10) + ")";
-	   });
-	   /*.on("mouseover", function(d) {
-
-			//Get this bar's x/y values, then augment for the tooltip
-			var xPosition = parseFloat(d3.select(this).attr("x")) + xScale.bandwidth() / 2;
-			var yPosition = parseFloat(d3.select(this).attr("y")) + 14;
-
-			//Create the tooltip label
-			svg_bar.append("text")
-			   .attr("id", "tooltip")
-			   .attr("x", xPosition)
-			   .attr("y", yPosition)
-			   .attr("text-anchor", "middle")
-			   .attr("font-family", "sans-serif")
-			   .attr("font-size", "11px")
-			   .attr("font-weight", "bold")
-			   .attr("fill", "black")
-			   .text(d);
-
-	   })
-	   .on("mouseout", function() {
-		   
-			//Remove the tooltip
-			d3.select("#tooltip").remove();
-				
-	   })*/
-	console.log("Finished drawing!");
+	   .attr('r',4);
+	   
+	//console.log("Finished drawing!");
 }
 
 
@@ -1189,7 +1060,7 @@ d3.selectAll(".checkbox").on("change",update_group)
  
 // Function that update circle position if something change
 function update_circle() {
-  d3.selectAll("circle")
+  svg.selectAll("circle")
     .attr("cx", function(d){ return map.latLngToLayerPoint(d.Coordinates).x })
     .attr("cy", function(d){ return map.latLngToLayerPoint(d.Coordinates).y })
     
