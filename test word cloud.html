@@ -602,7 +602,7 @@ var max = null;
 var min = null;
 
 var data = []
-  
+  //8-15  17  
 var parseTime = d3.timeParse("%m/%Y");
 
 var keys = Object.keys(groupByMonth)
@@ -642,13 +642,13 @@ var g_time = svg_time.append("g")
   x_time.domain([min["date"],max["date"]]);
   console.log( dif);
     y_time.domain([0//min1["avg"]
-    ,max1["avg"]]);
+   ,10]);
 
 
     g_time.append("g")
         .attr("class", "axis axis--x")
         .attr("transform", "translate(0," + (height_time) + ")")
-        .call(d3.axisBottom().scale(x_time).ticks(5))
+        .call(d3.axisBottom().scale(x_time).ticks(0))
     
 
         
