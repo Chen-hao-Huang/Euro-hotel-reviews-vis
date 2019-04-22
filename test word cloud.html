@@ -861,7 +861,7 @@ var dotColor = d3.scaleSequential(d3.interpolateRdYlGn)
             
 // get color from avg score
 var getColor  = function(Average_Score){
-  if(Average_Score =="<6"){
+  if(Average_Score =="<6.5"){
     Average_Score = 6;
   }
   return(dotColor(Average_Score));
@@ -937,8 +937,8 @@ svg.selectAll("mycircle")
 
     
         document.getElementById("Hotel_Name_display").innerHTML= ("Hotel Name: " + d.Hotel_Name.toString() )
-        document.getElementById("Hotel_Score_display").innerHTML = ("Total Reviews: "+ d.Total_Number_of_Reviews.toString()+"&#09"+  " Average Score: " + d.Average_Score )
-        document.getElementById("Hotel_Address_display").innerHTML = "Adress: " + d.Hotel_Address.toString()+ "<hr>"
+        document.getElementById("Hotel_Score_display").innerHTML = ("Total Reviews: "+ d.Total_Number_of_Reviews.toString()+"&#09"+  " / Average Score: " + d.Average_Score )
+        document.getElementById("Hotel_Address_display").innerHTML = "Hotel Address: " + d.Hotel_Address.toString()+ "<hr>"
 
         pieChart(d["Hotel_Name"],1)
 		barChart(d["Hotel_Name"])
@@ -997,7 +997,7 @@ var legend = L.control({position: 'bottomright'});
 legend.onAdd = function (map) {
 
   var div = L.DomUtil.create('div', 'info legend'),
-    grades = [  "<6",6.5, 7,7.5,8,8.5,9,9.5],
+    grades = [  "<6.5",6.5, 7,7.5,8,8.5,9,9.5],
     labels = [],
     from, to ;
 
