@@ -143,9 +143,18 @@ margin-top: 20px;
  
   <div class="col-lg-12">
     <!--Bar Charts-->
-<div id="barchart"></div>
-<div id="barChart"></div>
-
+	<div id="tooltipAvg" class="hidden">
+		<p><strong id="groupname"></strong></p>
+		<p>Average Rating: <span id="value"></span></p>
+	</div>
+	<div id="tooltipCt" class="hidden">
+		<p><strong id="groupname"></strong></p>
+		<p># of Reviews: <span id="value"></span></p>
+	</div>
+	
+	<div id="barchart"></div>
+	<div id="barChart"></div>
+	
 </div>
 </div>
 </div>
@@ -153,6 +162,7 @@ margin-top: 20px;
 
 
 <!-- Footer -->
+<!-- FIXME: The footer text goes on top of the tooltips -->
 <footer class="page-footer" style="background-color:gray">
     <div class="container">
         <div class="col-md-12 text-center" >
@@ -255,36 +265,57 @@ body {
   stroke-width: 1.5px;
 }
 
-<!--TEST CSS-->
-			rect:hover {
-				fill: orange;
-			}
+#tooltipAvg {
+	position: absolute;
+	width: 200px;
+	height: auto;
+	padding: 10px;
+	background-color: white;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	pointer-events: none;
+}
+
+#tooltipAvg.hidden {
+	display: none;
+}
+
+#tooltipAvg p {
+	margin: 0;
+	font-family: sans-serif;
+	font-size: 16px;
+	line-height: 20px;
+}
 			
-			#tooltip {
-				position: absolute;
-				width: 200px;
-				height: auto;
-				padding: 10px;
-				background-color: white;
-				-webkit-border-radius: 10px;
-				-moz-border-radius: 10px;
-				border-radius: 10px;
-				-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
-				-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
-				box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
-				pointer-events: none;
-			}
-			
-			#tooltip.hidden {
-				display: none;
-			}
-			
-			#tooltip p {
-				margin: 0;
-				font-family: sans-serif;
-				font-size: 16px;
-				line-height: 20px;
-			}
+#tooltipCt {
+	position: absolute;
+	width: 200px;
+	height: auto;
+	padding: 10px;
+	background-color: white;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	pointer-events: none;
+}
+
+#tooltipCt.hidden {
+	display: none;
+}
+
+#tooltipCt p {
+	margin: 0;
+	font-family: sans-serif;
+	font-size: 16px;
+	line-height: 20px;
+}
 
 </style>
 
@@ -410,8 +441,8 @@ function barChart(name){
 		}})
 		.object(hotelReviewByName[name]);
 	
-	var dataset = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
-					11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
+	/*var dataset = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
+					11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];*/
 	
 	var len = 0;
 	for(var rt in groupByRoomType) {
@@ -481,7 +512,9 @@ function barChart(name){
 	   })
 	   .attr("fill", function(d) {
 			return getColor(d[1]);
-	   });/*
+	   })
+	   /*.attr("stroke", "rgb(255,255,255)")
+	   .attr("stroke-width", 2)*/
 	   .on("mouseover", function(d) {
 
 			//Get this bar's x/y values, then augment for the tooltip
@@ -489,22 +522,27 @@ function barChart(name){
 			var yPosition = parseFloat(d3.select(this).attr("y")) / 2 + barH / 2;
 
 			//Update the tooltip position and value
-			d3.select("#tooltip")
+			d3.select("#tooltipAvg")
 				.style("left", xPosition + "px")
 				.style("top", yPosition + "px")						
-				.select("#value")
+				.select("#groupname")
 				.text(d[0]);
-	   
+				
+			d3.select("#tooltipAvg")
+				.select("#value")
+				.text(d[1]);
+				
+			//console.log("showing tooltip...");
 			//Show the tooltip
-			d3.select("#tooltip").classed("hidden", false);
+			d3.select("#tooltipAvg").classed("hidden", false);
 
 	   })
 	   .on("mouseout", function() {
 	   
 			//Hide the tooltip
-			d3.select("#tooltip").classed("hidden", true);
+			d3.select("#tooltipAvg").classed("hidden", true);
 			
-	   });*/
+	   });
 	   
 	   // Create Dots
 	   svg1.selectAll("circle") // Dot plot for counts
@@ -517,7 +555,35 @@ function barChart(name){
 	    .attr("cy", function(d) {
 			return  barH - yScale2(d[2]);
 	   })
-	   .attr('r',4);
+	   .attr('r',7)
+	   .on("mouseover", function(d) {
+
+			//Get this bar's x/y values, then augment for the tooltip
+			var xPosition = parseFloat(d3.select(this).attr("cx"));
+			var yPosition = parseFloat(d3.select(this).attr("cy"));
+
+			//Update the tooltip position and value
+			d3.select("#tooltipCt")
+				.style("left", xPosition + "px")
+				.style("top", yPosition + "px")						
+				.select("#groupname")
+				.text(d[0]);
+				
+			d3.select("#tooltipCt")
+				.select("#value")
+				.text(d[2]);
+				
+			//console.log("showing tooltip...");
+			//Show the tooltip
+			d3.select("#tooltipCt").classed("hidden", false);
+
+	   })
+	   .on("mouseout", function() {
+	   
+			//Hide the tooltip
+			d3.select("#tooltipCt").classed("hidden", true);
+			
+	   });;
 	   
 	//console.log("Finished drawing!");
 }
