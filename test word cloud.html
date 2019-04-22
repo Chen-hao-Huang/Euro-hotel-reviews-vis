@@ -265,6 +265,14 @@ body {
   stroke-width: 1.5px;
 }
 
+#barChart {
+	padding: 10px;
+}
+
+#barchart {
+	padding: 10px;
+}
+
 #tooltipAvg {
 	position: absolute;
 	width: 200px;
@@ -426,10 +434,11 @@ u
 	var barW = 600;
 	var barH = 250;
 	//Create SVG element
-	var svg1 = d3.select("#barChart")
+	var svgBC = d3.select("#barChart")
 				.append("svg")
 				.attr("width", barW)
-				.attr("height", barH);
+				.attr("height", barH)
+				.attr("padding", 10);
 function barChart(name){
 
 	//Width and height
@@ -489,14 +498,14 @@ function barChart(name){
 					.range([0, barH]);
 					
 	var yScale2 = d3.scaleLinear()
-					.domain([0,maxCt+1])
-					.range([0, barH]);
+					.domain([0, maxCt+1])
+					.range([10, barH-10]);
 					
 	//console.log(groupByRoomType);
 	
 
 	//Create bars
-	svg1.selectAll("rect") // bar chart for averages
+	svgBC.selectAll("rect") // bar chart for averages
 	   .data(data)
 	   .enter()
 	   .append("rect")
@@ -545,7 +554,7 @@ function barChart(name){
 	   });
 	   
 	   // Create Dots
-	   svg1.selectAll("circle") // Dot plot for counts
+	   svgBC.selectAll("circle") // Dot plot for counts
 	   .data(data)
 	   .enter()
 	   .append("circle")
