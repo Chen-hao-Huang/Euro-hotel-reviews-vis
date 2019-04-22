@@ -937,7 +937,7 @@ svg.selectAll("mycircle")
 
     
         document.getElementById("Hotel_Name_display").innerHTML= ("Hotel Name: " + d.Hotel_Name.toString() )
-        document.getElementById("Hotel_Score_display").innerHTML = ("Total Reviews: "+ d.Total_Number_of_Reviews.toString()+"&#09"+  " Average Score: " + d.Average_Score )
+        document.getElementById("Hotel_Score_display").innerHTML = ("Total Reviews: "+ d.Total_Number_of_Reviews.toString()+"&#09"+  " / Average Score: " + d.Average_Score )
         document.getElementById("Hotel_Address_display").innerHTML = "Adress: " + d.Hotel_Address.toString()+ "<hr>"
 
         pieChart(d["Hotel_Name"],1)
