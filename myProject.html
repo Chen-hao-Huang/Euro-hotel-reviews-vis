@@ -26,7 +26,7 @@
 		</div>
 	</div>
     <div class="row">
-        <div class="col-lg-2 col-sm-12 " style="margin-top:10%; margin-bottom:10%">
+        <div class="col-lg-2 col-sm-12 " >
             <div class="card text-center">
                 <h5 class="card-header">Hotel Average Score</h5>
                 <div class="card-body">
@@ -41,7 +41,10 @@
                     <input type="checkbox" class="checkbox" value="E" checked><label><strong> 5.0-6.0</strong></label>
                 </div>
 			  </div>
+			  <div class="card text-center">
+
 			  <div id="circleleg"> </div>
+			  </div>
 
         </div>
     	<div class="col-lg-10">
@@ -1340,5 +1343,59 @@ legend.onAdd = function (map) {
 };
 
 legend.addTo(map);
+
+
+// append the svg object to the body of the page
+var height = 160
+var width = 160
+var svgleg = d3.select("#circleleg")
+  .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+
+// The scale you use for bubble size
+var size = function(d){return 0.08*((d)/50+80)}  // Size in pixel
+
+// Add legend: circles
+var valuesToShow = [100, 5000, 10000]
+var xCircle = 50
+var xLabel = 100
+var yCircle = 100
+svgleg
+  .selectAll("legend")
+  .data(valuesToShow)
+  .enter()
+  .append("circle")
+    .attr("cx", xCircle)
+    .attr("cy", function(d){ return yCircle - size(d) } )
+    .attr("r", function(d){ return size(d) })
+    .style("fill", "none")
+    .attr("stroke", "#5B779F")
+
+// Add legend: segments
+svgleg
+  .selectAll("legend")
+  .data(valuesToShow)
+  .enter()
+  .append("line")
+    .attr('x1', function(d){ return xCircle + size(d) } )
+    .attr('x2', xLabel)
+    .attr('y1', function(d){ return yCircle - size(d) } )
+    .attr('y2', function(d){ return yCircle - size(d) } )
+    .attr('stroke', '#5B779F')
+    .style('stroke-dasharray', ('2,2'))
+
+// Add legend: labels
+svgleg
+  .selectAll("legend")
+  .data(valuesToShow)
+  .enter()
+  .append("text")
+    .attr('x', xLabel)
+    .attr('y', function(d){ return yCircle - size(d) } )
+    .text( function(d){ return d } )
+    .style("font-size", 10)
+	.attr("fill", "#5B779F")
+    .attr('alignment-baseline', 'middle')
 
 </script>
