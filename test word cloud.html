@@ -461,16 +461,20 @@ u
 
 
 ///BAR CHARTS
+	//Create SVG element
+
+function barChart(name){
+  
 	var barW = 600;
 	var barH = 250;
 	//Create SVG element
-	var svgBC = d3.select("#barChart")
+  d3.select("#barChart").selectAll("svg").remove();
+
+  var svgBC = d3.select("#barChart")
 				.append("svg")
 				.attr("width", barW)
 				.attr("height", barH)
 				.attr("padding", 10);
-function barChart(name){
-
 	//Width and height
 
 	var groupByRoomType = d3.nest()
@@ -920,7 +924,6 @@ console.log(data)
 			d3.select("#tooltiptime").classed("hidden", true);
 			
 	   });
-     chart.selectAll('path').data(data).exit().remove();
 
 }
 function timeChart(name){
