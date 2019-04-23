@@ -148,17 +148,33 @@ margin-top: 20px;
  
   <div class="col-lg-12">
     <!--Bar Charts-->
-	<div id="tooltipAvg" class="hidden">
+	<div id="tooltiprtAvg" class="hidden">
 		<p><strong id="groupname"></strong></p>
 		<p>Average Rating: <span id="value"></span></p>
 	</div>
-	<div id="tooltipCt" class="hidden">
+	<div id="tooltiprtCt" class="hidden">
 		<p><strong id="groupname"></strong></p>
 		<p># of Reviews: <span id="value"></span></p>
 	</div>
+	<h4 id="BarGraphRTName"></h4>
+	<div id="barchartrt"></div>
+	<div id="barChartRT"></div>
 	
-	<div id="barchart"></div>
-	<div id="barChart"></div>
+</div>
+
+<div class="col-lg-12">
+    <!--Bar Charts-->
+	<div id="tooltipdsAvg" class="hidden">
+		<p><strong id="groupname"></strong></p>
+		<p>Average Rating: <span id="value"></span></p>
+	</div>
+	<div id="tooltipdsCt" class="hidden">
+		<p><strong id="groupname"></strong></p>
+		<p># of Reviews: <span id="value"></span></p>
+	</div>
+	<h4 id="BarGraphDSName"></h4>
+	<div id="barchartds"></div>
+	<div id="barChartDS"></div>
 	
 </div>
 </div>
@@ -267,15 +283,15 @@ body {
   stroke-width: 1.5px;
   stroke: #ffab00}
 
-#barChart {
+.barChart {
 	padding: 10px;
 }
 
-#barchart {
+.barchart {
 	padding: 10px;
 }
 
-#tooltipAvg {
+#tooltiprtAvg {
 	position: absolute;
 	width: 200px;
 	height: auto;
@@ -290,18 +306,18 @@ body {
 	pointer-events: none;
 }
 
-#tooltipAvg.hidden {
+#tooltiprtAvg.hidden {
 	display: none;
 }
 
-#tooltipAvg p {
+#tooltiprtAvg p {
 	margin: 0;
 	font-family: sans-serif;
 	font-size: 16px;
 	line-height: 20px;
 }
 			
-#tooltipCt {
+#tooltiprtCt {
 	position: absolute;
 	width: 200px;
 	height: auto;
@@ -316,11 +332,63 @@ body {
 	pointer-events: none;
 }
 
-#tooltipCt.hidden {
+#tooltiprtCt.hidden {
 	display: none;
 }
 
-#tooltipCt p {
+#tooltiprtCt p {
+	margin: 0;
+	font-family: sans-serif;
+	font-size: 16px;
+	line-height: 20px;
+}
+
+#tooltipdsAvg {
+	position: absolute;
+	width: 200px;
+	height: auto;
+	padding: 10px;
+	background-color: white;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	pointer-events: none;
+}
+
+#tooltipdsAvg.hidden {
+	display: none;
+}
+
+#tooltipdsAvg p {
+	margin: 0;
+	font-family: sans-serif;
+	font-size: 16px;
+	line-height: 20px;
+}
+			
+#tooltipdsCt {
+	position: absolute;
+	width: 200px;
+	height: auto;
+	padding: 10px;
+	background-color: white;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	pointer-events: none;
+}
+
+#tooltipdsCt.hidden {
+	display: none;
+}
+
+#tooltipdsCt p {
 	margin: 0;
 	font-family: sans-serif;
 	font-size: 16px;
@@ -471,14 +539,24 @@ function barChart(name){
   d3.select("#barChart").selectAll("svg").remove();
 
   var svgBC = d3.select("#barChart")
+	var svgRT = d3.select("#barChartRT") // RT for Room Type
 				.append("svg")
 				.attr("width", barW)
 				.attr("height", barH)
 				.attr("padding", 10);
 	//Width and height
+				
+	var svgDS = d3.select("#barChartDS") // DS for Days Stayed
+				.append("svg")
+				.attr("width", barW)
+				.attr("height", barH)
+				.attr("padding", 10);
+				
+function barChartRT(name){
 
 	var groupByRoomType = d3.nest()
-		.key(function(d) {return d.Room_Type; })
+		.key(function(d) {
+		return d.Room_Type; })
 		.rollup(function(v) { return {
 			count: v.length, avg: d3.mean(v, function(d) { return d.Reviewer_Score; })
 		}})
@@ -491,14 +569,12 @@ function barChart(name){
 	for(var rt in groupByRoomType) {
 		len += 1;
 	}
-	
 					
 	var maxAvg = null
 	var maxCt = null
 	var minAvg = null
 	var data = []
 	
-	  
 	var keys = Object.keys(groupByRoomType)
 	keys.forEach(function(key,value){
 
@@ -548,7 +624,7 @@ function barChart(name){
 	//    ;
 
 	//Create bars
-	svgBC.selectAll("rect") // bar chart for averages
+	svgRT.selectAll("rect") // bar chart for averages
 	   .data(data)
 	   .enter()
 	   .append("rect")
@@ -574,30 +650,30 @@ function barChart(name){
 			var yPosition = parseFloat(d3.select(this).attr("y")) / 2 + barH / 2;
 
 			//Update the tooltip position and value
-			d3.select("#tooltipAvg")
+			d3.select("#tooltiprtAvg")
 				.style("left", xPosition + "px")
 				.style("top", yPosition + "px")						
 				.select("#groupname")
 				.text(d[0]);
 				
-			d3.select("#tooltipAvg")
+			d3.select("#tooltiprtAvg")
 				.select("#value")
 				.text(d[1].toFixed(2));
 				
 			//console.log("showing tooltip...");
 			//Show the tooltip
-			d3.select("#tooltipAvg").classed("hidden", false);
+			d3.select("#tooltiprtAvg").classed("hidden", false);
 
 	   })
 	   .on("mouseout", function() {
 	   
 			//Hide the tooltip
-			d3.select("#tooltipAvg").classed("hidden", true);
+			d3.select("#tooltiprtAvg").classed("hidden", true);
 			
 	   });
 	   
 	   // Create Dots
-	   svgBC.selectAll("circle") // Dot plot for counts
+	   svgRT.selectAll("circle") // Dot plot for counts
 	   .data(data)
 	   .enter()
 	   .append("circle")
@@ -615,30 +691,173 @@ function barChart(name){
 			var yPosition = parseFloat(d3.select(this).attr("cy"));
 
 			//Update the tooltip position and value
-			d3.select("#tooltipCt")
+			d3.select("#tooltiprtCt")
 				.style("left", xPosition + "px")
 				.style("top", yPosition + "px")						
 				.select("#groupname")
 				.text(d[0]);
 				
-			d3.select("#tooltipCt")
+			d3.select("#tooltiprtCt")
 				.select("#value")
 				.text(d[2].toFixed(2));
 				
 			//console.log("showing tooltip...");
 			//Show the tooltip
-			d3.select("#tooltipCt").classed("hidden", false);
+			d3.select("#tooltiprtCt").classed("hidden", false);
 
 	   })
 	   .on("mouseout", function() {
 	   
 			//Hide the tooltip
-			d3.select("#tooltipCt").classed("hidden", true);
+			d3.select("#tooltiprtCt").classed("hidden", true);
 			
 	   });;
 	   
 	//console.log("Finished drawing!");
 }
+/*
+function barChartDS(name){
+
+	var groupByDaysStayed = d3.nest()
+		.key(function(d) {return d.Days_Stay; })
+		.rollup(function(v) { return {
+			count: v.length, avg: d3.mean(v, function(d) { return d.Reviewer_Score; })
+		}})
+		.object(hotelReviewByName[name]);
+	
+	var len = 0;
+	for(var rt in groupByDaysStayed) {
+		len += 1;
+	}
+	
+					
+	var maxAvg = null
+	var maxCt = null
+	var data = []
+	
+	  
+	var keys = Object.keys(groupByDaysStayed)
+	keys.forEach(function(key,value){
+
+	var current = groupByDaysStayed[key];
+	categoryAvg = current["avg"]
+	data.push([key,categoryAvg,current["count"]])
+
+	if (maxAvg === null || categoryAvg > maxAvg) {
+		maxAvg = categoryAvg;
+	}
+	categoryCt = current["count"]
+	if (maxCt === null || categoryCt > maxCt) {
+		maxCt = categoryCt;
+	}
+	})
+
+
+	var xScale = d3.scaleBand()
+					.domain(d3.range(data.length))
+					.rangeRound([0, barW])
+					.paddingInner(0.05);
+
+	var yScale1 = d3.scaleLinear()
+					.domain([0,maxAvg+1])
+					.range([0, barH]);
+					
+	var yScale2 = d3.scaleLinear()
+					.domain([0, maxCt+1])
+					.range([10, barH-10]);
+
+	//Create bars
+	svgDS.selectAll("rect") // bar chart for averages
+	   .data(data)
+	   .enter()
+	   .append("rect")
+	   .attr("x", function(d, i) {
+			return xScale(i);
+	   })
+	   .attr("y", function(d) {
+			return  barH - yScale1(d[1]);
+	   })
+	   .attr("width", xScale.bandwidth())
+	   .attr("height", function(d) {
+			return yScale1(d[1]);
+	   })
+	   .attr("fill", function(d) {
+			return getColor(d[1]);
+	   })
+	   .on("mouseover", function(d) {
+
+			//Get this bar's x/y values, then augment for the tooltip
+			var xPosition = parseFloat(d3.select(this).attr("x")) + xScale.bandwidth() / 2;
+			var yPosition = parseFloat(d3.select(this).attr("y")) / 2 + barH / 2;
+
+			//Update the tooltip position and value
+			d3.select("#tooltipdsAvg")
+				.style("left", xPosition + "px")
+				.style("top", yPosition + "px")						
+				.select("#groupname")
+				.text(d[0]);
+				
+			d3.select("#tooltipdsAvg")
+				.select("#value")
+				.text(d[1]);
+				
+			//console.log("showing tooltip...");
+			//Show the tooltip
+			d3.select("#tooltipdsAvg").classed("hidden", false);
+
+	   })
+	   .on("mouseout", function() {
+	   
+			//Hide the tooltip
+			d3.select("#tooltipdsAvg").classed("hidden", true);
+			
+	   });
+	   
+	   // Create Dots
+	   svgDS.selectAll("circle") // Dot plot for counts
+	   .data(data)
+	   .enter()
+	   .append("circle")
+	   .attr('cx', function(d, i) {
+			return xScale(i) + xScale.bandwidth()/2;
+	   })
+	    .attr("cy", function(d) {
+			return  barH - yScale2(d[2]);
+	   })
+	   .attr('r',7)
+	   .on("mouseover", function(d) {
+
+			//Get this bar's x/y values, then augment for the tooltip
+			var xPosition = parseFloat(d3.select(this).attr("cx"));
+			var yPosition = parseFloat(d3.select(this).attr("cy"));
+
+			//Update the tooltip position and value
+			d3.select("#tooltipdsCt")
+				.style("left", xPosition + "px")
+				.style("top", yPosition + "px")						
+				.select("#groupname")
+				.text(d[0]);
+				
+			d3.select("#tooltipdsCt")
+				.select("#value")
+				.text(d[2]);
+				
+			//console.log("showing tooltip...");
+			//Show the tooltip
+			d3.select("#tooltipdsCt").classed("hidden", false);
+
+	   })
+	   .on("mouseout", function() {
+	   
+			//Hide the tooltip
+			d3.select("#tooltipdsCt").classed("hidden", true);
+			
+	   });;
+	   
+	//console.log("Finished drawing!");
+}
+*/
+
 
 
 // POS WORD CLOUDS
@@ -1043,6 +1262,8 @@ svg.selectAll("mycircle")
     document.getElementById("NegativeComments").innerHTML= ("NegativeComments "  )
     document.getElementById("PieComments").innerHTML= ("PieComments"  )
     document.getElementById("TimeChartName").innerHTML= ("TimeChartName"  )
+	document.getElementById("BarGraphRTName").innerHTML= ("Average Review Scores of Room Types"  )
+	document.getElementById("BarGraphDSName").innerHTML= ("Average Review Scores of Days Stayed"  )
 
     
         document.getElementById("Hotel_Name_display").innerHTML= ("Hotel Name: " + d.Hotel_Name.toString() )
@@ -1050,7 +1271,8 @@ svg.selectAll("mycircle")
         document.getElementById("Hotel_Address_display").innerHTML = "Hotel Address: " + d.Hotel_Address.toString()+ "<hr>"
 
         pieChart(d["Hotel_Name"],1)
-		barChart(d["Hotel_Name"])
+		barChartRT(d["Hotel_Name"])
+		barChartDS(d["Hotel_Name"])
 
     timeChart(d["Hotel_Name"])
         
