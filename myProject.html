@@ -705,6 +705,7 @@ function barChartRTChenhao(name){
 	for(var rt in groupByRoomType) {
 		len += 1;
 	}
+
 	var fill = d3.scale.category20();
 	var maxAvg = null
 	var maxCt = null
@@ -729,6 +730,13 @@ function barChartRTChenhao(name){
 		maxCt = categoryCt;
 	}
 	})
+
+	data.sort(function (a, b) {
+		console.log(a);
+		return  a[0] - b[0];
+	});
+	
+
 
 	var xScale = d3.scaleBand()
 					.domain(keys)
