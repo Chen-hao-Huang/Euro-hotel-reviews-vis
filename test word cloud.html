@@ -770,8 +770,14 @@ function neg_review(neg_cloud, selected_hotel) {
 
 /// TIME CHART
 
-var width_time = 700,
+
+
+function  updateTimeChart(groupByMonth){
+
+
+  var width_time = 700,
     height_time = 300;
+   
 var svg_time = d3.select("#timechart").append("svg") .attr("width", width_time)
       .attr("height", height_time+100),
     margin_time = {top: 20, right: 20, bottom: 30, left: 40};
@@ -779,20 +785,19 @@ var svg_time = d3.select("#timechart").append("svg") .attr("width", width_time)
     var chartWidth = 617;
     var chartHeight = 300;
     var margin = { top: 20, right: 30, bottom: 30, left: 60 };
+    var chart = d3.select('#chart')
+    chart.selectAll('svg').remove();
 
-    var chart = d3.select('#chart').append('svg').attr('class', 'line-chart').attr('width', chartWidth).attr('height', chartHeight).append('g').attr('class', 'main').attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
+     chart = d3.select('#chart')
+ .append('svg').attr('class', 'line-chart').attr('width', chartWidth).attr('height', chartHeight).append('g').attr('class', 'main').attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
 
     
 console.log(width_time)
-
-
-function  updateTimeChart(groupByMonth){
-
-
     var max1 = null;
 var min1 = null;
 var max = null;
 var min = null;
+
 
 var data = []
   //8-15  17  
@@ -823,8 +828,9 @@ keys.forEach(function(key,value){
 
 
   data.sort(function (a, b) {
-    return new Date(b[0]) - new Date(a[0]);
+    return new Date(a[0]) - new Date(b[0]);
 });
+console.log(data)
 
 /*
 * @param {Array} this.state.data - Arrar of arrays. ex. [["01/31/2016", 200], ["02/07/2016", 350]]
@@ -855,6 +861,7 @@ keys.forEach(function(key,value){
         return yx(d[1]);
     });
     // draw x axis
+
     chart.append('g').attr('class', 'x-axis').attr('transform', 'translate(0, ' + (chartHeight - margin_time.top -margin_time.right) + ')').call(xAxis);
 
     // draw y axis
@@ -912,8 +919,9 @@ keys.forEach(function(key,value){
 			//Hide the tooltip
 			d3.select("#tooltiptime").classed("hidden", true);
 			
-	   });;
-	
+	   });
+     chart.selectAll('path').data(data).exit().remove();
+
 }
 function timeChart(name){
   var parseTime = d3.timeParse("%m/%Y");
