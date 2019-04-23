@@ -45,10 +45,8 @@
                     <input type="checkbox" class="checkbox" value="E" checked><label><strong> 5.0-6.0</strong></label>
                 </div>
 			  </div>
-			  <div class="card text-center"style="
-			  margin-top: 10px;
-		  ">
-
+			  <div class="card text-center"style="margin-top: 10px;">
+				<p>Number of Reviews</p>
 			  <div id="circleleg"> </div>
 			  </div>
 
@@ -1352,7 +1350,7 @@ legend.addTo(map);
 
 
 // append the svg object to the body of the page
-var height = 160
+var height = 90
 var width = 160
 var svgleg = d3.select("#circleleg")
   .append("svg")
@@ -1366,7 +1364,7 @@ var size = function(d){return 0.08*((d)/50+80)}  // Size in pixel
 var valuesToShow = [100, 5000, 10000]
 var xCircle = 50
 var xLabel = 95
-var yCircle = 100
+var yCircle = 60
 svgleg
   .selectAll("legend")
   .data(valuesToShow)
