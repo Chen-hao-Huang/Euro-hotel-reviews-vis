@@ -136,7 +136,7 @@ margin-top: 20px;
 
 <div class="col-lg-8 text-center"> 
 
-    <div id="timechart"></div>
+    <!-- <div id="timechart"></div>-->
     <div id="chart"></div>
 
 
@@ -837,6 +837,48 @@ keys.forEach(function(key,value){
     // add lines to the graph
     chart.append('g').attr('class', 'line').selectAll('path').data(data).enter().append('path').attr('d', line);
 
+
+	   // Create Dots
+	   chart.selectAll("circle") // Dot plot for counts
+	   .data(data)
+	   .enter()
+	   .append("circle")
+	   .attr('cx', function(d, i) {
+       console.log(d);
+			return xx(d[0]);
+	   })
+	    .attr("cy", function(d) {
+			return  barH - yx(d[1]);
+	   })
+	   .attr('r',7);
+	  //  .on("mouseover", function(d) {
+
+		// 	//Get this bar's x/y values, then augment for the tooltip
+		// 	var xPosition = parseFloat(d3.select(this).attr("cx"));
+		// 	var yPosition = parseFloat(d3.select(this).attr("cy"));
+
+		// 	//Update the tooltip position and value
+		// 	d3.select("#tooltipCt")
+		// 		.style("left", xPosition + "px")
+		// 		.style("top", yPosition + "px")						
+		// 		.select("#groupname")
+		// 		.text(d[0]);
+				
+		// 	d3.select("#tooltipCt")
+		// 		.select("#value")
+		// 		.text(d[2]);
+				
+		// 	//console.log("showing tooltip...");
+		// 	//Show the tooltip
+		// 	d3.select("#tooltipCt").classed("hidden", false);
+
+	  //  })
+	  //  .on("mouseout", function() {
+	   
+		// 	//Hide the tooltip
+		// 	d3.select("#tooltipCt").classed("hidden", true);
+			
+	  //  });;
 	
 }
 function timeChart(name){
