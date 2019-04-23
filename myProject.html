@@ -17,6 +17,9 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <link rel="icon" href="favicon.png" sizes="16x16">
 
+<head>
+	<title>Trends in European Hotel Reviews	</title>
+  </head>
 <!-- Create an element where the map will take place -->
 <body>
 <div class="container">
@@ -777,7 +780,7 @@ function wrap(text, width) {
 	   .attr("y", function(d) {
 			return    yScale2(d[2])+margin_time.top;
 	   })
-	   .style("fill", function(d, i) { return fill(i); })
+	   .style("fill", function(d, i) { return getColor(d[1]); })
 
 	   .attr("width", xScale.bandwidth())
 	   .attr("height", function(d) {
