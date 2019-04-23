@@ -145,9 +145,18 @@ margin-top: 20px;
  
   <div class="col-lg-12">
     <!--Bar Charts-->
-<div id="barchart"></div>
-<div id="barChart"></div>
-
+	<div id="tooltipAvg" class="hidden">
+		<p><strong id="groupname"></strong></p>
+		<p>Average Rating: <span id="value"></span></p>
+	</div>
+	<div id="tooltipCt" class="hidden">
+		<p><strong id="groupname"></strong></p>
+		<p># of Reviews: <span id="value"></span></p>
+	</div>
+	
+	<div id="barchart"></div>
+	<div id="barChart"></div>
+	
 </div>
 </div>
 </div>
@@ -155,6 +164,7 @@ margin-top: 20px;
 
 
 <!-- Footer -->
+<!-- FIXME: The footer text goes on top of the tooltips -->
 <footer class="page-footer" style="background-color:gray">
     <div class="container">
         <div class="col-md-12 text-center" >
@@ -257,36 +267,65 @@ body {
   stroke-width: 1.5px;
 }
 
-<!--TEST CSS-->
-			rect:hover {
-				fill: orange;
-			}
+#barChart {
+	padding: 10px;
+}
+
+#barchart {
+	padding: 10px;
+}
+
+#tooltipAvg {
+	position: absolute;
+	width: 200px;
+	height: auto;
+	padding: 10px;
+	background-color: white;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	pointer-events: none;
+}
+
+#tooltipAvg.hidden {
+	display: none;
+}
+
+#tooltipAvg p {
+	margin: 0;
+	font-family: sans-serif;
+	font-size: 16px;
+	line-height: 20px;
+}
 			
-			#tooltip {
-				position: absolute;
-				width: 200px;
-				height: auto;
-				padding: 10px;
-				background-color: white;
-				-webkit-border-radius: 10px;
-				-moz-border-radius: 10px;
-				border-radius: 10px;
-				-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
-				-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
-				box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
-				pointer-events: none;
-			}
-			
-			#tooltip.hidden {
-				display: none;
-			}
-			
-			#tooltip p {
-				margin: 0;
-				font-family: sans-serif;
-				font-size: 16px;
-				line-height: 20px;
-			}
+#tooltipCt {
+	position: absolute;
+	width: 200px;
+	height: auto;
+	padding: 10px;
+	background-color: white;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	pointer-events: none;
+}
+
+#tooltipCt.hidden {
+	display: none;
+}
+
+#tooltipCt p {
+	margin: 0;
+	font-family: sans-serif;
+	font-size: 16px;
+	line-height: 20px;
+}
 
 </style>
 
@@ -397,10 +436,11 @@ u
 	var barW = 600;
 	var barH = 250;
 	//Create SVG element
-	var svg1 = d3.select("#barChart")
+	var svgBC = d3.select("#barChart")
 				.append("svg")
 				.attr("width", barW)
-				.attr("height", barH);
+				.attr("height", barH)
+				.attr("padding", 10);
 function barChart(name){
 
 	//Width and height
@@ -412,8 +452,8 @@ function barChart(name){
 		}})
 		.object(hotelReviewByName[name]);
 	
-	var dataset = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
-					11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
+	/*var dataset = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
+					11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];*/
 	
 	var len = 0;
 	for(var rt in groupByRoomType) {
@@ -422,6 +462,7 @@ function barChart(name){
 	
 					
 	var maxAvg = null
+	var maxCt = null
 	var minAvg = null
 	var data = []
 	
@@ -431,7 +472,7 @@ function barChart(name){
 
 	var current = groupByRoomType[key];
 	categoryAvg = current["avg"]
-	data.push([key,current["avg"],current["count"]])
+	data.push([key,categoryAvg,current["count"]])
 
 	if (maxAvg === null || categoryAvg > maxAvg) {
 		maxAvg = categoryAvg;
@@ -439,8 +480,11 @@ function barChart(name){
 	if (minAvg === null || categoryAvg < minAvg) {
 		minAvg = categoryAvg;
 	}
+	categoryCt = current["count"]
+	if (maxCt === null || categoryCt > maxCt) {
+		maxCt = categoryCt;
+	}
 	})
-
 
 
 	var xScale = d3.scaleBand()
@@ -448,12 +492,15 @@ function barChart(name){
 					.rangeRound([0, barW])
 					.paddingInner(0.05);
 
-	var yScale = d3.scaleLinear()
-					.domain([0,maxAvg])
+	var yScale1 = d3.scaleLinear()
+					.domain([0,maxAvg+1])
 					.range([0, barH]);
 					
-	console.log(groupByRoomType);
-	
+	var yScale2 = d3.scaleLinear()
+					.domain([0, maxCt+1])
+					.range([10, barH-10]);
+					
+	//console.log(groupByRoomType);
 	
 	// svg1.selectAll("circle")
 	//    .data(data)
@@ -469,7 +516,7 @@ function barChart(name){
 	//    ;
 
 	//Create bars
-	svg1.selectAll("rect")
+	svgBC.selectAll("rect") // bar chart for averages
 	   .data(data)
 	   .enter()
 	   .append("rect")
@@ -477,15 +524,17 @@ function barChart(name){
 			return xScale(i);
 	   })
 	   .attr("y", function(d) {
-			return  barH - yScale(d[1]);
+			return  barH - yScale1(d[1]);
 	   })
 	   .attr("width", xScale.bandwidth())
 	   .attr("height", function(d) {
-			return yScale(d[1]);
+			return yScale1(d[1]);
 	   })
 	   .attr("fill", function(d) {
 			return getColor(d[1]);
 	   })
+	   /*.attr("stroke", "rgb(255,255,255)")
+	   .attr("stroke-width", 2)*/
 	   .on("mouseover", function(d) {
 
 			//Get this bar's x/y values, then augment for the tooltip
@@ -493,162 +542,70 @@ function barChart(name){
 			var yPosition = parseFloat(d3.select(this).attr("y")) / 2 + barH / 2;
 
 			//Update the tooltip position and value
-			d3.select("#tooltip")
+			d3.select("#tooltipAvg")
 				.style("left", xPosition + "px")
 				.style("top", yPosition + "px")						
-				.select("#value")
+				.select("#groupname")
 				.text(d[0]);
-	   
+				
+			d3.select("#tooltipAvg")
+				.select("#value")
+				.text(d[1]);
+				
+			//console.log("showing tooltip...");
 			//Show the tooltip
-			d3.select("#tooltip").classed("hidden", false);
+			d3.select("#tooltipAvg").classed("hidden", false);
 
 	   })
 	   .on("mouseout", function() {
 	   
 			//Hide the tooltip
-			d3.select("#tooltip").classed("hidden", true);
+			d3.select("#tooltipAvg").classed("hidden", true);
 			
-	   })
-	   .on("click", function() {
-			sortBars();
 	   });
-
-	//Define sort order flag
-	var sortOrder = false;
-	
-	//Define sort function
-	var sortBars = function() {
-
-		//Flip value of sortOrder
-		sortOrder = !sortOrder;
-
-		svg.selectAll("rect")
-		   .sort(function(a, b) {
-				if (sortOrder) {
-					return d3.ascending(a, b);
-				} else {
-					return d3.descending(a, b);
-				}
-			})
-		   .transition()
-		   .delay(function(d, i) {
-			   return i * 50;
-		   })
-		   .duration(1000)
-		   .attr("x", function(d, i) {
-				return xScale(i);
-		   });
-
-	};
-
-	
-	/*
-	var w = 500;
-	var h = 250;
-	
-	var svg_bar = d3.select("#barchart").append("svg")
-		.attr("width",w)
-		.attr("height",h);
-		/*
-		.append("g")
-        .attr("transform", "translate("+(w / 2)+","+(h / 2)+")");
-		
-		
-	// Copied from Pie Chart groupBy and altered
-	var groupByRoomType = d3.nest()
-		.key(function(d) {return d.Room_Type; })
-		.rollup(function(v) { return {
-			count: v.length, avg: d3.mean(v, function(d) { return d.Reviewer_Score; })
-		}})
-		.object(hotelReviewByName[name]);
-  
-  
-  var count = 0;
-  for(var rt in groupByRoomType) {
-	count += 1;
-	}
-
-  // TODO: The dataset is in a completely different format than in the sample code
-  // x = room type, y = avg score (additional y axis for count)
-  //console.log(count)
-  
-  var maxAvg = null
-  var minAvg = null
-  //var data = []
-  
-  var keys = Object.keys(groupByRoomType)
-	keys.forEach(function(key,value){
-
-	var current = groupByRoomType[key];
-	categoryAvg = current["avg"]
-	//data.push([mo,current["avg"] ])
-
-	if (maxAvg === null || categoryAvg > maxAvg) {
-		maxAvg = categoryAvg;
-	}
-	if (minAvg === null || categoryAvg < minAvg) {
-		minAvg = categoryAvg;
-	}
-	})
-
-  //console.log(hotelReviewByName[name]);
-  console.log(groupByRoomType);
-	
-	var xScale = d3.scaleBand()
-		.domain(d3.range(count))
-		.rangeRound([0, w])
-		.paddingInner(0.05);
-
-	var yScale = d3.scaleLinear()
-		.domain([minAvg-1, maxAvg])
-		.range([0, h]);
-		
-	console.log("starting to draw bar chart...");
-	svg_bar.selectAll("rect")
-	   .data(groupByRoomType)
+	   
+	   // Create Dots
+	   svgBC.selectAll("circle") // Dot plot for counts
+	   .data(data)
 	   .enter()
-	   .append("rect")
-	   .attr("x", function(d, i) {
-			//console.log(d);
-			return xScale(i);
+	   .append("circle")
+	   .attr('cx', function(d, i) {
+			return xScale(i) + xScale.bandwidth()/2;
 	   })
-	   .attr("y", function(d) {
-			return h - yScale(d["avg"]);
+	    .attr("cy", function(d) {
+			return  barH - yScale2(d[2]);
 	   })
-	   .attr("width", xScale.bandwidth())
-	   .attr("height", function(d) {
-				return yScale(d["avg"]);
-		})
-	   .attr("fill", function(d) {
-			//console.log("test");
-			return "rgb(0, 0, " + Math.round(d["avg"] * 10) + ")";
-	   });
-	   /*.on("mouseover", function(d) {
+	   .attr('r',7)
+	   .on("mouseover", function(d) {
 
 			//Get this bar's x/y values, then augment for the tooltip
-			var xPosition = parseFloat(d3.select(this).attr("x")) + xScale.bandwidth() / 2;
-			var yPosition = parseFloat(d3.select(this).attr("y")) + 14;
+			var xPosition = parseFloat(d3.select(this).attr("cx"));
+			var yPosition = parseFloat(d3.select(this).attr("cy"));
 
-			//Create the tooltip label
-			svg_bar.append("text")
-			   .attr("id", "tooltip")
-			   .attr("x", xPosition)
-			   .attr("y", yPosition)
-			   .attr("text-anchor", "middle")
-			   .attr("font-family", "sans-serif")
-			   .attr("font-size", "11px")
-			   .attr("font-weight", "bold")
-			   .attr("fill", "black")
-			   .text(d);
+			//Update the tooltip position and value
+			d3.select("#tooltipCt")
+				.style("left", xPosition + "px")
+				.style("top", yPosition + "px")						
+				.select("#groupname")
+				.text(d[0]);
+				
+			d3.select("#tooltipCt")
+				.select("#value")
+				.text(d[2]);
+				
+			//console.log("showing tooltip...");
+			//Show the tooltip
+			d3.select("#tooltipCt").classed("hidden", false);
 
 	   })
 	   .on("mouseout", function() {
-		   
-			//Remove the tooltip
-			d3.select("#tooltip").remove();
-				
-	   })*/
-	console.log("Finished drawing!");
+	   
+			//Hide the tooltip
+			d3.select("#tooltipCt").classed("hidden", true);
+			
+	   });;
+	   
+	//console.log("Finished drawing!");
 }
 
 
@@ -871,9 +828,6 @@ keys.forEach(function(key,value){
     }).y(function (d) {
         return yx(d[1]);
     });
-
-
-
     // draw x axis
     chart.append('g').attr('class', 'x-axis').attr('transform', 'translate(0, ' + (chartHeight - margin.top - margin.bottom) + ')').call(xAxis);
 
@@ -884,32 +838,6 @@ keys.forEach(function(key,value){
     chart.append('g').attr('class', 'line').selectAll('path').data(data).enter().append('path').attr('d', line);
 
 	
-	chart.selectAll("circle")
-	   .data(data)
-	   .enter()
-	   .append("circle")
-	   .attr('cx', function(d, i) {
-       console.log(d[0])
-			return xx(d[0]);
-	   })
-	    .attr("cy", function(d) {
-			return   yx(d[1]);
-	   })
-	   .attr('r',4)
-	   ;
-
-   // https://codepen.io/carlvlewis/pen/rWjZKO
- // https://bl.ocks.org/hitarth19/0295f89b15da5ec03bc1a20644182ce8
-
-
-
-
-
-
-
-  };
-//https://bl.ocks.org/alandunning/cfb7dcd7951826b9eacd54f0647f48d3
-    
 
 function timeChart(name){
   var parseTime = d3.timeParse("%m/%Y");
