@@ -536,23 +536,32 @@ function barChart(name){
 	var barW = 600;
 	var barH = 250;
 	//Create SVG element
-  d3.select("#barChart").selectAll("svg").remove();
-
-  var svgBC = d3.select("#barChart")
 	var svgRT = d3.select("#barChartRT") // RT for Room Type
 				.append("svg")
 				.attr("width", barW)
 				.attr("height", barH)
 				.attr("padding", 10);
-	//Width and height
 				
 	var svgDS = d3.select("#barChartDS") // DS for Days Stayed
 				.append("svg")
 				.attr("width", barW)
 				.attr("height", barH)
 				.attr("padding", 10);
-				
+}
 function barChartRT(name){
+
+  d3.select("#barChartRT").selectAll("svg").remove();
+
+
+	var barW = 600;
+	var barH = 250;
+	//Create SVG element
+	var svgRT = d3.select("#barChartRT") // RT for Room Type
+				.append("svg")
+				.attr("width", barW)
+				.attr("height", barH)
+				.attr("padding", 10);
+
 
 	var groupByRoomType = d3.nest()
 		.key(function(d) {
@@ -1272,7 +1281,7 @@ svg.selectAll("mycircle")
 
         pieChart(d["Hotel_Name"],1)
 		barChartRT(d["Hotel_Name"])
-		barChartDS(d["Hotel_Name"])
+		//barChartDS(d["Hotel_Name"])
 
     timeChart(d["Hotel_Name"])
         
