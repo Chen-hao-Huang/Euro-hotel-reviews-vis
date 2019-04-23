@@ -26,8 +26,8 @@
     <div class="col-md-12">
 		<div class=" text-center" style="margin-top: 20px;">
 			<h1>Studies in European Hotel Reviews</h1>
-			<h2 class="text-center">Click on a circle to get more information on the hotel
-			</h2>
+			<p class="text-center">Click on a circle to get more information on the hotel
+			</p>
 		</div>
 	</div>
     <div class="row">
@@ -655,6 +655,9 @@ function barChartRT(name){
 			return  barH - yScale2(d[2]);
 	   })
 	   .attr('r',7)
+	   .style("fill", function(d, i) { return getColor(d[1]); })
+	    .attr("stroke", "gray")
+     	.attr("stroke-width", 1.5)
 	   .on("mouseover", function(d) {
 			//Get this bar's x/y values, then augment for the tooltip
 			var xPosition = parseFloat(d3.select(this).attr("cx"));
@@ -860,9 +863,9 @@ function wrap(text, width) {
 	   .attr('r',7)
 	   
 	   .attr("fill", function(d) {
-			return getColor(d[1]);
-	   })
-	   .attr("stroke", "gray")
+			return "#5B779F";
+	   	})  
+	   .attr("stroke", "white")
      	.attr("stroke-width", 1.5)
 	   .on("mouseover", function(d) {
 			//Get this bar's x/y values, then augment for the tooltip
