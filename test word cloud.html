@@ -268,7 +268,7 @@ body {
 .line {
   fill: none;
   stroke-width: 1.5px;
-
+stroke-width: 2;
 }
 
 #barChart {
@@ -793,11 +793,6 @@ console.log(width_time)
 function  updateTimeChart(groupByMonth){
 
 
-  var line_time = d3.line()
-    .x(function(d) { return x(d[0]); })
-    .y(function(d) { return y(d[1]); });
-
-
     var max1 = null;
 var min1 = null;
 var max = null;
@@ -868,8 +863,10 @@ keys.forEach(function(key,value){
     chart.append('g').attr('class', 'y-axis').attr('transform', 'translate(0,0)').call(yAxis);
 
     // add lines to the graph
-    chart.append('g').attr('class', 'line').selectAll('path').data(data).enter().append('path').attr('d', line);
-
+//    chart.append('g').attr('class', 'line').selectAll('path').data(data).enter().append('path').attr('d', line);
+    chart.append("path")
+    .attr('class', 'line')
+    .attr('d', line(data));
 
 	   // Create Dots
 	   chart.selectAll("circle") // Dot plot for counts
