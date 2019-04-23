@@ -822,6 +822,9 @@ keys.forEach(function(key,value){
   })
 
 
+  data.sort(function (a, b) {
+    return new Date(b[0]) - new Date(a[0]);
+});
 
 /*
 * @param {Array} this.state.data - Arrar of arrays. ex. [["01/31/2016", 200], ["02/07/2016", 350]]
