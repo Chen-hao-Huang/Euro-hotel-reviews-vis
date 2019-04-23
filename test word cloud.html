@@ -762,8 +762,8 @@ function  updateTimeChart(groupByMonth){
 
 
   var line_time = d3.line()
-    .x(function(d) { return x(d.date); })
-    .y(function(d) { return y(d.avg); });
+    .x(function(d) { return x(d[0]); })
+    .y(function(d) { return y(d[1]); });
 
 
     var max1 = null;
@@ -805,7 +805,7 @@ keys.forEach(function(key,value){
 
     // define axis ranges
     var xExtents = d3.extent(data, function (d) {
-        return new Date(d[0]);
+        return d[0];
     });
     var yExtents = d3.extent(data, function (d) {
         return d[1];
@@ -815,8 +815,9 @@ keys.forEach(function(key,value){
      xx = d3.time.scale().domain([xExtents[0], xExtents[1]]).rangeRound([0, chartWidth - margin.left - margin.right]);
 
     // scale for y axis. this will also be used to convert data.values to their appropriate svg coordinate
-     yx = d3.scale.linear().domain([yExtents[0], Math.ceil(yExtents[0]) * 2]).range([chartHeight - margin.top - margin.bottom, 0]);
-
+     yx = d3.scaleLinear().range([chartHeight,0]).domain([0,10])
+        console.log(d3.max(data, function(d) { return d[1]; }));
+    console.log(yExtents[0]);
     // define the x axis
     var xAxis = d3.axisBottom().scale(xx).ticks(5);
     // define the y axis
@@ -848,7 +849,7 @@ keys.forEach(function(key,value){
 			return xx(d[0]);
 	   })
 	    .attr("cy", function(d) {
-			return  barH - yx(d[1]);
+			return  yx(d[1]);
 	   })
 	   .attr('r',7);
 	  //  .on("mouseover", function(d) {
