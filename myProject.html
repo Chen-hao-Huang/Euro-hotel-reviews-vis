@@ -40,7 +40,9 @@
                     <br>
                     <input type="checkbox" class="checkbox" value="E" checked><label><strong> 5.0-6.0</strong></label>
                 </div>
-          	</div>
+			  </div>
+			  <div id="circleleg"> </div>
+
         </div>
     	<div class="col-lg-10">
 			<div id="mapid"> </div>
@@ -673,13 +675,15 @@ function barChartRT(name){
 function barChartRTChenhao(name){
   	d3.select("#barchartds").selectAll("svg").remove();
 	
-	var barW = 600;
+	var barW = 700;
+	var margin_time = {top: 25, right: 25, bottom: 30, left: 40};
+
 	var barH = 250;
 	//Create SVG element
 	var svgRT = d3.select("#barchartds") // RT for Room Type
 				.append("svg")
-				.attr("width", barW)
-				.attr("height", barH)
+				.attr("width", barW+margin_time.left+margin_time.right)
+				.attr("height", barH+margin_time.bottom+margin_time.top)
 				.attr("padding", 10);
 
 	var groupByRoomType = d3.nest()
@@ -720,34 +724,58 @@ function barChartRTChenhao(name){
 	})
 
 	var xScale = d3.scaleBand()
-					.domain(d3.range(data.length))
-					.rangeRound([0, barW])
+					.domain(keys)
+					.range([0, barW])
 					.paddingInner(0.05);
 
 	var yScale1 = d3.scaleLinear()
-					.domain([0,maxAvg+1])
-					.range([0, barH]);
+					.domain([10,0])
+					.range([0,barH]);
 					
 	var yScale2 = d3.scaleLinear()
-					.domain([0, maxCt+1])
-					.range([10, barH-10]);
+					.domain([maxCt+10,0])
+					.range([0, barH]);
 
+
+function wrap(text, width) {
+  text.each(function() {
+    var text = d3.select(this),
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1, // ems
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")),
+        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em")
+    while (word = words.pop()) {
+      line.push(word)
+      tspan.text(line.join(" "))
+      if (tspan.node().getComputedTextLength() > width) {
+        line.pop()
+        tspan.text(line.join(" "))
+        line = [word]
+        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", `${++lineNumber * lineHeight + dy}em`).text(word)
+      }
+    }
+  })
+}
 	//Create bars
 	svgRT.selectAll("rect") // bar chart for averages
 	   .data(data)
 	   .enter()
 	   .append("rect")
 	   .attr("x", function(d, i) {
-			return xScale(i);
+			return xScale(d[0])+margin_time.left;
 	   })
 	   .attr("y", function(d) {
-			return  barH - yScale2(d[2]);
+			return    yScale2(d[2])+margin_time.top;
 	   })
 	   .style("fill", function(d, i) { return fill(i); })
 
 	   .attr("width", xScale.bandwidth())
 	   .attr("height", function(d) {
-			return yScale2(d[2]);
+			return barH- yScale2(d[2]);
 	   })
 	   .on("mouseover", function(d) {
 
@@ -764,7 +792,7 @@ function barChartRTChenhao(name){
 				
 			d3.select("#tooltiprtCtChenhao")
 				.select("#value")
-				.text(d[1].toFixed(2));
+				.text(d[2].toFixed(2));
 
 			//Show the tooltip
 			d3.select("#tooltiprtCtChenhao").classed("hidden", false);
@@ -774,16 +802,52 @@ function barChartRTChenhao(name){
 			d3.select("#tooltiprtCtChenhao").classed("hidden", true);
 	   });
 	   
+
+	   
+    // define the x axis
+    var xAxis = d3.axisBottom().scale(xScale).ticks(5);
+    // define the y axis
+    var yAxis1 = d3.axisRight().scale(yScale1).ticks(5);
+	var yAxis2 = d3.axisLeft().scale(yScale2).ticks(5);
+
+    // graph line definition
+ 	   
+    // draw y axis
+    svgRT.append('g')
+    	.attr('class', 'y-axis')
+    	.attr('transform', 'translate('+margin_time.left+','+margin_time.top+')')
+		
+		.call(yAxis2)
+		.append("text")
+        .attr("class", "axis-title")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .attr("fill", "#5D6971")
+
+        .text("Review Count");;
+		
+
+
+    // draw x axis
+    svgRT.append('g')
+    	.attr('class', 'x-axis')
+    	.attr('transform', 'translate('+margin_time.left+', ' + (barH + margin_time.top) + ')')
+    	.call(xAxis)
+
+		.selectAll(".tick text")
+      .call(wrap,  xScale.bandwidth());
 	   // Create Dots
 	   svgRT.selectAll("circle") // Dot plot for counts
 	   .data(data)
 	   .enter()
 	   .append("circle")
 	   .attr('cx', function(d, i) {
-			return xScale(i) + xScale.bandwidth()/2;
+			return xScale(d[0]) +margin_time.left+ xScale.bandwidth()/2;
 	   })
 	    .attr("cy", function(d) {
-			return  barH - yScale1(d[1]);
+			return  yScale1(d[1])+margin_time.top;
 	   })
 	   .attr('r',7)
 	   
@@ -806,7 +870,7 @@ function barChartRTChenhao(name){
 				
 			d3.select("#tooltiprtAvgChenhao")
 				.select("#value")
-				.text(d[2].toFixed(2));
+				.text(d[1].toFixed(2));
 				
 			//Show the tooltip
 			d3.select("#tooltiprtAvgChenhao").classed("hidden", false);
@@ -815,6 +879,25 @@ function barChartRTChenhao(name){
 			//Hide the tooltip
 			d3.select("#tooltiprtAvgChenhao").classed("hidden", true);
 	   });
+
+
+		 // draw y axis
+		 svgRT.append('g')
+    	.attr('class', 'y-axis')
+    	.attr('transform', 'translate('+(barW+margin_time.left)+','+margin_time.top+')')
+		
+		.call(yAxis1)
+		.append("text")
+        .attr("class", "axis-title")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", "-1.31em")
+        .style("text-anchor", "end")
+        .attr("fill", "#5D6971")
+
+        .text("Average Score");;
+		
+		
 }
 
 // POS WORD CLOUDS
@@ -1040,6 +1123,7 @@ function  updateTimeChart(groupByMonth){
     	.attr('class', 'y-axis')
     	.attr('transform', 'translate(0,0)')
     	.call(yAxis);
+		
 
     // add lines to the graph
     chart.append("path")
