@@ -779,7 +779,8 @@ var keys = Object.keys(groupByMonth)
 keys.forEach(function(key,value){
 
   var current = groupByMonth[key];
-  mo = "01/ "+(parseInt(current["date"].getMonth())+1)+' / '+current["date"].getFullYear();
+//  mo = "01/"+(parseInt(current["date"].getMonth())+1)+'/'+current["date"].getFullYear();
+  mo = current["date"]
   data.push([mo,current["avg"] ])
 
   if (max === null || current["date"] > max["date"]) {
@@ -812,7 +813,7 @@ keys.forEach(function(key,value){
     });
 
     // scale for x axis. this will also be used to convert data.dates to their appropriate svg coordinate
-     xx = d3.time.scale().domain([xExtents[0], xExtents[1]]).rangeRound([0, chartWidth - margin.left - margin.right]);
+     xx = d3.time.scale().range([0,chartWidth]).domain([xExtents[0], xExtents[1]]).rangeRound([0, chartWidth - margin_time.left + margin_time.right]);
 
     // scale for y axis. this will also be used to convert data.values to their appropriate svg coordinate
      yx = d3.scaleLinear().range([chartHeight,0]).domain([0,10])
@@ -824,13 +825,13 @@ keys.forEach(function(key,value){
     var yAxis = d3.axisLeft().scale(yx).ticks(5);
     // graph line definition
     var line = d3.line().x(function (d) {
-   
-        return xx(new Date(d[0]));
+      console.log(new Date(d[0]));
+        return xx(d[0]);
     }).y(function (d) {
         return yx(d[1]);
     });
     // draw x axis
-    chart.append('g').attr('class', 'x-axis').attr('transform', 'translate(0, ' + (chartHeight - margin.top - margin.bottom) + ')').call(xAxis);
+    chart.append('g').attr('class', 'x-axis').attr('transform', 'translate(0, ' + (chartHeight - margin_time.top - margin_time.bottom) + ')').call(xAxis);
 
     // draw y axis
     chart.append('g').attr('class', 'y-axis').attr('transform', 'translate(0,0)').call(yAxis);
