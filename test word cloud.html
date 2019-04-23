@@ -813,7 +813,7 @@ keys.forEach(function(key,value){
     });
 
     // scale for x axis. this will also be used to convert data.dates to their appropriate svg coordinate
-     xx = d3.time.scale().range([0,chartWidth]).domain([xExtents[0], xExtents[1]]).rangeRound([0, chartWidth - margin_time.left + margin_time.right]);
+     xx = d3.time.scale().range([0,chartWidth]).domain([xExtents[0], xExtents[1]]).rangeRound([0, chartWidth - margin_time.left - margin_time.right-10]);
 
     // scale for y axis. this will also be used to convert data.values to their appropriate svg coordinate
      yx = d3.scaleLinear().range([chartHeight,0]).domain([0,10])
@@ -831,7 +831,7 @@ keys.forEach(function(key,value){
         return yx(d[1]);
     });
     // draw x axis
-    chart.append('g').attr('class', 'x-axis').attr('transform', 'translate(0, ' + (chartHeight - margin_time.top - margin_time.bottom) + ')').call(xAxis);
+    chart.append('g').attr('class', 'x-axis').attr('transform', 'translate(0, ' + (chartHeight - margin_time.top -margin_time.right) + ')').call(xAxis);
 
     // draw y axis
     chart.append('g').attr('class', 'y-axis').attr('transform', 'translate(0,0)').call(yAxis);
