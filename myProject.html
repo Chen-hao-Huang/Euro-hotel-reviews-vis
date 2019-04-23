@@ -120,6 +120,15 @@
 		</div>
 		<h4 id="BarGraphDSName"></h4>
 		<div id="barchartds"></div>
+		
+		<div id="tooltiprtAvgChenhao" class="hidden">
+			<p><strong id="groupname"></strong></p>
+			<p>Average Rating: <span id="value"></span></p>
+		</div>
+		<div id="tooltiprtCtChenhao" class="hidden">
+			<p><strong id="groupname"></strong></p>
+			<p># of Reviews: <span id="value"></span></p>
+		</div>
 		<div id="barChartDS"></div>
 	</div>
 </div>
@@ -224,6 +233,32 @@ body {
 	padding: 10px;
 }
 
+#tooltiprtAvgChenhao {
+	position: absolute;
+	width: 200px;
+	height: auto;
+	padding: 10px;
+	background-color: white;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	pointer-events: none;
+}
+
+#tooltiprtAvgChenhao.hidden {
+	display: none;
+}
+
+#tooltiprtAvgChenhao p {
+	margin: 0;
+	font-family: sans-serif;
+	font-size: 16px;
+	line-height: 20px;
+}
+
 #tooltiprtAvg {
 	position: absolute;
 	width: 200px;
@@ -275,6 +310,33 @@ body {
 	font-size: 16px;
 	line-height: 20px;
 }
+	
+#tooltiprtCtChenhao {
+	position: absolute;
+	width: 200px;
+	height: auto;
+	padding: 10px;
+	background-color: white;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	pointer-events: none;
+}
+
+#tooltiprtCtChenhao.hidden {
+	display: none;
+}
+
+#tooltiprtCtChenhao p {
+	margin: 0;
+	font-family: sans-serif;
+	font-size: 16px;
+	line-height: 20px;
+}
+
 
 #tooltipdsAvg {
 	position: absolute;
@@ -605,6 +667,153 @@ function barChartRT(name){
 	   .on("mouseout", function() {
 			//Hide the tooltip
 			d3.select("#tooltiprtCt").classed("hidden", true);
+	   });
+}
+
+function barChartRTChenhao(name){
+  	d3.select("#barchartds").selectAll("svg").remove();
+	
+	var barW = 600;
+	var barH = 250;
+	//Create SVG element
+	var svgRT = d3.select("#barchartds") // RT for Room Type
+				.append("svg")
+				.attr("width", barW)
+				.attr("height", barH)
+				.attr("padding", 10);
+
+	var groupByRoomType = d3.nest()
+		.key(function(d) {
+		return d.Room_Type; })
+		.rollup(function(v) { return {
+			count: v.length, avg: d3.mean(v, function(d) { return d.Reviewer_Score; })
+		}})
+		.object(hotelReviewByName[name]);
+	
+	var len = 0;
+	for(var rt in groupByRoomType) {
+		len += 1;
+	}
+	var fill = d3.scale.category20();
+	var maxAvg = null
+	var maxCt = null
+	var minAvg = null
+	var data = []
+	
+	var keys = Object.keys(groupByRoomType)
+	keys.forEach(function(key,value){
+
+	var current = groupByRoomType[key];
+	categoryAvg = current["avg"]
+	data.push([key,categoryAvg,current["count"]])
+
+	if (maxAvg === null || categoryAvg > maxAvg) {
+		maxAvg = categoryAvg;
+	}
+	if (minAvg === null || categoryAvg < minAvg) {
+		minAvg = categoryAvg;
+	}
+	categoryCt = current["count"]
+	if (maxCt === null || categoryCt > maxCt) {
+		maxCt = categoryCt;
+	}
+	})
+
+	var xScale = d3.scaleBand()
+					.domain(d3.range(data.length))
+					.rangeRound([0, barW])
+					.paddingInner(0.05);
+
+	var yScale1 = d3.scaleLinear()
+					.domain([0,maxAvg+1])
+					.range([0, barH]);
+					
+	var yScale2 = d3.scaleLinear()
+					.domain([0, maxCt+1])
+					.range([10, barH-10]);
+
+	//Create bars
+	svgRT.selectAll("rect") // bar chart for averages
+	   .data(data)
+	   .enter()
+	   .append("rect")
+	   .attr("x", function(d, i) {
+			return xScale(i);
+	   })
+	   .attr("y", function(d) {
+			return  barH - yScale2(d[2]);
+	   })
+	   .style("fill", function(d, i) { return fill(i); })
+
+	   .attr("width", xScale.bandwidth())
+	   .attr("height", function(d) {
+			return yScale2(d[2]);
+	   })
+	   .on("mouseover", function(d) {
+
+			//Get this bar's x/y values, then augment for the tooltip
+			var xPosition = parseFloat(d3.select(this).attr("x")) + xScale.bandwidth() / 2;
+			var yPosition = parseFloat(d3.select(this).attr("y")) / 2 + barH / 2;
+
+			//Update the tooltip position and value
+			d3.select("#tooltiprtCtChenhao")
+				.style("left", xPosition + "px")
+				.style("top", yPosition + "px")						
+				.select("#groupname")
+				.text(d[0]);
+				
+			d3.select("#tooltiprtCtChenhao")
+				.select("#value")
+				.text(d[1].toFixed(2));
+
+			//Show the tooltip
+			d3.select("#tooltiprtCtChenhao").classed("hidden", false);
+	   })
+	   .on("mouseout", function() {   
+			//Hide the tooltip
+			d3.select("#tooltiprtCtChenhao").classed("hidden", true);
+	   });
+	   
+	   // Create Dots
+	   svgRT.selectAll("circle") // Dot plot for counts
+	   .data(data)
+	   .enter()
+	   .append("circle")
+	   .attr('cx', function(d, i) {
+			return xScale(i) + xScale.bandwidth()/2;
+	   })
+	    .attr("cy", function(d) {
+			return  barH - yScale1(d[1]);
+	   })
+	   .attr('r',7)
+	   
+	   .attr("fill", function(d) {
+			return getColor(d[1]);
+	   })
+	   .attr("stroke", "gray")
+     	.attr("stroke-width", 1.5)
+	   .on("mouseover", function(d) {
+			//Get this bar's x/y values, then augment for the tooltip
+			var xPosition = parseFloat(d3.select(this).attr("cx"));
+			var yPosition = parseFloat(d3.select(this).attr("cy"));
+
+			//Update the tooltip position and value
+			d3.select("#tooltiprtAvgChenhao")
+				.style("left", xPosition + "px")
+				.style("top", yPosition + "px")						
+				.select("#groupname")
+				.text(d[0]);
+				
+			d3.select("#tooltiprtAvgChenhao")
+				.select("#value")
+				.text(d[2].toFixed(2));
+				
+			//Show the tooltip
+			d3.select("#tooltiprtAvgChenhao").classed("hidden", false);
+	   })
+	   .on("mouseout", function() {
+			//Hide the tooltip
+			d3.select("#tooltiprtAvgChenhao").classed("hidden", true);
 	   });
 }
 
@@ -983,8 +1192,8 @@ svg.selectAll("mycircle")
 	    document.getElementById("NegativeComments").innerHTML= ("NegativeComments "  )
 	    document.getElementById("Trip Type").innerHTML= ("Trip Type"  )
 	    document.getElementById("Score Changes Over Time").innerHTML= ("Score Changes Over Time"  )
-		document.getElementById("BarGraphRTName").innerHTML= ("Average Review Scores of Room Types"  )
-		document.getElementById("BarGraphDSName").innerHTML= ("Average Review Scores of Days Stayed"  )
+		document.getElementById("BarGraphRTName").innerHTML= ("Average Review Scores of Room Types Graph A"  )
+		document.getElementById("BarGraphDSName").innerHTML= ("Average Review Scores of Room Types Graph B"  )
 
         document.getElementById("Hotel_Name_display").innerHTML= ("Hotel Name: " + d.Hotel_Name.toString() )
         document.getElementById("Hotel_Score_display").innerHTML = ("Total Reviews: "+ d.Total_Number_of_Reviews.toString()+"&#09"+  " / Average Score: " + d.Average_Score )
@@ -993,6 +1202,7 @@ svg.selectAll("mycircle")
         pieChart(d["Hotel_Name"],1)
 		barChartRT(d["Hotel_Name"])
     	timeChart(d["Hotel_Name"])
+		barChartRTChenhao(d["Hotel_Name"])
     });
 
 
