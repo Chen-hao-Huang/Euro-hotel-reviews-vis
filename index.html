@@ -1260,6 +1260,7 @@ var Tooltip = d3.select("#mapid")
       .style("border-radius", "10px")
       .style("padding", "5px")
 	  
+	  
 var in_circle = function(d) {
       Tooltip.style("opacity", 1)
 	  d3.select(this)
@@ -1279,7 +1280,9 @@ var showme = function(d) {
 	     Tooltip
 	    .html("Hotel Name: " + d.Hotel_Name.toString() + "<br>" + "Score: " + d.Average_Score + "<br>" + "Adress: " + d.Hotel_Address.toString())
 	    .style("left", 50 + "px")
-	  	.style("background-color",  getColor(d.Average_Score));
+	  	.style("background-color",  getColor(d.Average_Score))
+		.style("color", function(){if(d.Average_Score>7){return"black"}else{return"white"}});
+
 }
 
 svg.selectAll("mycircle")
@@ -1307,7 +1310,7 @@ svg.selectAll("mycircle")
 	    document.getElementById("Trip Type").innerHTML= ("Trip Type"  )
 	    document.getElementById("Score Changes Over Time").innerHTML= ("Score Changes Over Time"  )
 		document.getElementById("BarGraphRTName").innerHTML= ("Average Review Scores of Room Types (Hover over bars/dots for more details)"  )
-		document.getElementById("BarGraphDSName").innerHTML= ("# of Reviews of Room Types"  )
+		document.getElementById("BarGraphDSName").innerHTML= ("Number of Reviews of Room Types"  )
 
         document.getElementById("Hotel_Name_display").innerHTML= ("Hotel Name: " + d.Hotel_Name.toString() )
         document.getElementById("Hotel_Score_display").innerHTML = ("Total Reviews: "+ d.Total_Number_of_Reviews.toString()+"&#09"+  " / Average Score: " + d.Average_Score )
