@@ -1133,7 +1133,7 @@ var showme = function(d) {
 	    .style("cursor", "pointer");
 
 	     Tooltip
-	    .html("Hotel Name: " + d.Hotel_Name.toString() + "<br>" + "Score: " + d.Average_Score + "<br>" + "Address: " + d.Hotel_Address.toString())
+	    .html("Hotel Name: " + d.Hotel_Name.toString() + "<br>" + "Average Score: " + d.Average_Score + "<br>" + "Address: " + d.Hotel_Address.toString())
 	    .style("left", 50 + "px")
 	  	.style("background-color",  getColor(d.Average_Score))
 		.style("color", function(){if(d.Average_Score>7){return"black"}else{return"white"}});
