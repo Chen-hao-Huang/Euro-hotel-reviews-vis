@@ -101,7 +101,9 @@
 		    <div id="tooltiptime" class="hidden">
 		        <p><strong id="groupname"></strong></p>
 		        <p>Month Average Score: <span id="value"></span></p>
-		    </div>
+		        <p>Number of Reviews: <span id="reviwNumb"></span></p>
+
+			</div>
 			<div id="chart"></div>
 		</div>
 	</div>
@@ -138,7 +140,7 @@
 		</div>
 		<div id="tooltiprtCtChenhao" class="hidden">
 			<p><strong id="groupname"></strong></p>
-			<p># of Reviews: <span id="value"></span></p>
+			<p>Number of Reviews: <span id="value"></span></p>
 		</div>
 		<div id="barChartDS"></div>
 	</div>
@@ -1068,7 +1070,8 @@ function  updateTimeChart(groupByMonth){
 	var min1 = null;
 	var max = null;
 	var min = null;
-
+	var maxct = null;
+	var minct = null;
 	var data = [] 
 	var parseTime = d3.timeParse("%m/%Y");
 
@@ -1077,13 +1080,16 @@ function  updateTimeChart(groupByMonth){
 	  	var current = groupByMonth[key];
 
 		mo = current["date"]
-		data.push([mo,current["avg"] ])
+		data.push([mo,current["avg"], current["count"]])
 
 		if (max === null || current["date"] > max["date"]) {
 		    max = current;
 		}
 		if (max1 === null || current["avg"] > max1["avg"]) {
 		    max1 = current;
+		}
+		if (maxct === null || current["count"] > maxct["count"]) {
+		    maxct = current;
 		}
 		if (min === null || current["date"] < min["date"]) {
 		    min = current;
@@ -1092,8 +1098,12 @@ function  updateTimeChart(groupByMonth){
 		if (min1 === null || current["avg"] < min1["avg"]) {
 		    min1 = current;
 		}
+		
+		if (minct === null || current["count"] < minct["count"]) {
+		    minct = current;
+		}
 	})
-
+	console.log(maxct)
 	data.sort(function (a, b) {
 		return new Date(a[0]) - new Date(b[0]);
 	});
@@ -1141,6 +1151,9 @@ function  updateTimeChart(groupByMonth){
     	.attr('class', 'line')
     	.attr('d', line(data));
 
+		var ctcolor = d3.scaleSequential(d3.interpolatePuBu)
+            .domain([0,maxct["count"]])
+		console.log(	maxct["count"]);
 	// Create Dots
 	chart.selectAll("circle") // Dot plot for counts
 		.data(data)
@@ -1156,7 +1169,8 @@ function  updateTimeChart(groupByMonth){
      	.attr("stroke", "gray")
      	.attr("stroke-width", 1.5)
     	.attr("fill", function(d) {
-			return getColor(d[1]);
+			
+			return ctcolor(d[2]);
 	   	})  
 	   	.on("mouseover", function(d) {
 			//Get this bar's x/y values, then augment for the tooltip
@@ -1173,6 +1187,11 @@ function  updateTimeChart(groupByMonth){
 			d3.select("#tooltiptime")
 				.select("#value")
 				.text(d[1].toFixed(2));
+
+				
+			d3.select("#tooltiptime")
+				.select("#reviwNumb")
+				.text(d[2]);
 				
 			//Show the tooltip
 			d3.select("#tooltiptime").classed("hidden", false);
