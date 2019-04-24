@@ -117,7 +117,6 @@
 			<p><strong id="groupname"></strong></p>
 			<p># of Reviews: <span id="value"></span></p>
 		</div>
-		<h4 id="BarGraphRTName"></h4>
 		<div id="barchartrt"></div>
 		<div id="barChartRT"></div>
 	</div>
@@ -540,151 +539,6 @@ function barChart(name){
 				.attr("padding", 10);
 }
 
-function barChartRT(name){
-  	d3.select("#barChartRT").selectAll("svg").remove();
-	
-	var barW = 600;
-	var barH = 250;
-	//Create SVG element
-	var svgRT = d3.select("#barChartRT") // RT for Room Type
-				.append("svg")
-				.attr("width", barW)
-				.attr("height", barH)
-				.attr("padding", 10);
-
-	var groupByRoomType = d3.nest()
-		.key(function(d) {
-		return d.Room_Type; })
-		.rollup(function(v) { return {
-			count: v.length, avg: d3.mean(v, function(d) { return d.Reviewer_Score; })
-		}})
-		.object(hotelReviewByName[name]);
-	
-	var len = 0;
-	for(var rt in groupByRoomType) {
-		len += 1;
-	}
-					
-	var maxAvg = null
-	var maxCt = null
-	var minAvg = null
-	var data = []
-	
-	var keys = Object.keys(groupByRoomType)
-	keys.forEach(function(key,value){
-
-	var current = groupByRoomType[key];
-	categoryAvg = current["avg"]
-	data.push([key,categoryAvg,current["count"]])
-
-	if (maxAvg === null || categoryAvg > maxAvg) {
-		maxAvg = categoryAvg;
-	}
-	if (minAvg === null || categoryAvg < minAvg) {
-		minAvg = categoryAvg;
-	}
-	categoryCt = current["count"]
-	if (maxCt === null || categoryCt > maxCt) {
-		maxCt = categoryCt;
-	}
-	})
-
-	var xScale = d3.scaleBand()
-					.domain(d3.range(data.length))
-					.rangeRound([0, barW])
-					.paddingInner(0.05);
-
-	var yScale1 = d3.scaleLinear()
-					.domain([0,maxAvg+1])
-					.range([0, barH]);
-					
-	var yScale2 = d3.scaleLinear()
-					.domain([0, maxCt+1])
-					.range([10, barH-10]);
-
-	//Create bars
-	svgRT.selectAll("rect") // bar chart for averages
-	   .data(data)
-	   .enter()
-	   .append("rect")
-	   .attr("x", function(d, i) {
-			return xScale(i);
-	   })
-	   .attr("y", function(d) {
-			return  barH - yScale1(d[1]);
-	   })
-	   .attr("width", xScale.bandwidth())
-	   .attr("height", function(d) {
-			return yScale1(d[1]);
-	   })
-	   .attr("fill", function(d) {
-			return getColor(d[1]);
-	   })
-	   .on("mouseover", function(d) {
-
-			//Get this bar's x/y values, then augment for the tooltip
-			var xPosition = parseFloat(d3.select(this).attr("x")) + xScale.bandwidth() / 2;
-			var yPosition = parseFloat(d3.select(this).attr("y")) / 2 + barH / 2;
-
-			//Update the tooltip position and value
-			d3.select("#tooltiprtAvg")
-				.style("left", xPosition + "px")
-				.style("top", yPosition + "px")						
-				.select("#groupname")
-				.text(d[0]);
-				
-			d3.select("#tooltiprtAvg")
-				.select("#value")
-				.text(d[1].toFixed(2));
-
-			//Show the tooltip
-			d3.select("#tooltiprtAvg").classed("hidden", false);
-	   })
-	   .on("mouseout", function() {   
-			//Hide the tooltip
-			d3.select("#tooltiprtAvg").classed("hidden", true);
-	   });
-	   
-	   // Create Dots
-	   svgRT.selectAll("circle") // Dot plot for counts
-	   .data(data)
-	   .enter()
-	   .append("circle")
-	   .attr('cx', function(d, i) {
-			return xScale(i) + xScale.bandwidth()/2;
-	   })
-	    .attr("cy", function(d) {
-			return  barH - yScale2(d[2]);
-	   })
-	   .attr('r',7)
-	   /*.style("fill", function(d, i) { return getColor(d[1]); })*/
-	    .attr("stroke", "gray")
-     	.attr("stroke-width", 1.5)
-	   .on("mouseover", function(d) {
-			//Get this bar's x/y values, then augment for the tooltip
-			var xPosition = parseFloat(d3.select(this).attr("cx"));
-			var yPosition = parseFloat(d3.select(this).attr("cy"));
-
-			//Update the tooltip position and value
-			d3.select("#tooltiprtCt")
-				.style("left", xPosition + "px")
-				.style("top", yPosition + "px")						
-				.select("#groupname")
-				.text(d[0]);
-				
-			d3.select("#tooltiprtCt")
-				.select("#value")
-				.text(d[2].toFixed(2));
-				
-			//Show the tooltip
-			d3.select("#tooltiprtCt").classed("hidden", false);
-	   })
-	   .on("mouseout", function() {
-			//Hide the tooltip
-			d3.select("#tooltiprtCt").classed("hidden", true);
-	   });
-}
-
 function barChartRTChenhao(name){
   	d3.select("#barchartds").selectAll("svg").remove();
 	
@@ -833,7 +687,8 @@ function wrap(text, width) {
 		.call(yAxis2)
 		.append("text")
         .attr("class", "axis-title")
-        .attr("transform", "rotate(-90)")
+        .attr("transform", 'translate('+(margin_time.left+20)+','+(-margin_time.top)+')')
+		
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
@@ -902,7 +757,8 @@ function wrap(text, width) {
 		.call(yAxis1)
 		.append("text")
         .attr("class", "axis-title")
-        .attr("transform", "rotate(-90)")
+        .attr("transform", 'translate('+0+','+(0)+')')
+		
         .attr("y", 6)
         .attr("dy", "-1.31em")
         .style("text-anchor", "end")
@@ -1153,7 +1009,6 @@ function  updateTimeChart(groupByMonth){
 
 		var ctcolor = d3.scaleSequential(d3.interpolatePuBu)
             .domain([0,maxct["count"]])
-		console.log(	maxct["count"]);
 	// Create Dots
 	chart.selectAll("circle") // Dot plot for counts
 		.data(data)
@@ -1309,15 +1164,13 @@ svg.selectAll("mycircle")
 	    document.getElementById("NegativeComments").innerHTML= ("NegativeComments "  )
 	    document.getElementById("Trip Type").innerHTML= ("Trip Type"  )
 	    document.getElementById("Score Changes Over Time").innerHTML= ("Score Changes Over Time"  )
-		document.getElementById("BarGraphRTName").innerHTML= ("Average Review Scores of Room Types (Hover over bars/dots for more details)"  )
-		document.getElementById("BarGraphDSName").innerHTML= ("Number of Reviews of Room Types"  )
+		document.getElementById("BarGraphDSName").innerHTML= ("Number of Reviews and Average Review Scores of Room Types"  )
 
         document.getElementById("Hotel_Name_display").innerHTML= ("Hotel Name: " + d.Hotel_Name.toString() )
         document.getElementById("Hotel_Score_display").innerHTML = ("Total Reviews: "+ d.Total_Number_of_Reviews.toString()+"&#09"+  " / Average Score: " + d.Average_Score )
         document.getElementById("Hotel_Address_display").innerHTML = "Hotel Address: " + d.Hotel_Address.toString()+ "<hr>"
 
         pieChart(d["Hotel_Name"],1)
-		barChartRT(d["Hotel_Name"])
     	timeChart(d["Hotel_Name"])
 		barChartRTChenhao(d["Hotel_Name"])
     });
