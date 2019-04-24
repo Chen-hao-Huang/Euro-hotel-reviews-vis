@@ -657,7 +657,7 @@ function barChartRT(name){
 			return  barH - yScale2(d[2]);
 	   })
 	   .attr('r',7)
-	   .style("fill", function(d, i) { return getColor(d[1]); })
+	   /*.style("fill", function(d, i) { return getColor(d[1]); })*/
 	    .attr("stroke", "gray")
      	.attr("stroke-width", 1.5)
 	   .on("mouseover", function(d) {
@@ -1306,8 +1306,8 @@ svg.selectAll("mycircle")
 	    document.getElementById("NegativeComments").innerHTML= ("NegativeComments "  )
 	    document.getElementById("Trip Type").innerHTML= ("Trip Type"  )
 	    document.getElementById("Score Changes Over Time").innerHTML= ("Score Changes Over Time"  )
-		document.getElementById("BarGraphRTName").innerHTML= ("Average Review Scores of Room Types Graph A"  )
-		document.getElementById("BarGraphDSName").innerHTML= ("Average Review Scores of Room Types Graph B"  )
+		document.getElementById("BarGraphRTName").innerHTML= ("Average Review Scores of Room Types (Hover over bars/dots for more details)"  )
+		document.getElementById("BarGraphDSName").innerHTML= ("# of Reviews of Room Types"  )
 
         document.getElementById("Hotel_Name_display").innerHTML= ("Hotel Name: " + d.Hotel_Name.toString() )
         document.getElementById("Hotel_Score_display").innerHTML = ("Total Reviews: "+ d.Total_Number_of_Reviews.toString()+"&#09"+  " / Average Score: " + d.Average_Score )
