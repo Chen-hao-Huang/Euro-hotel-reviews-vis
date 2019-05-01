@@ -472,7 +472,6 @@ var label = d3.arc()
 
 			
 function pieChart(name,type){
-	// The radius of the pieplot is half the width or half the height (smallest one).
 	var groupByTripType = d3.nest()
   						.key(function(d) {return d.Trip_Type; })
   						.rollup(function(v) { return {
@@ -524,7 +523,6 @@ function updatePie(data) {
 
 
 //BAR CHARTS
-//Create SVG element
 function barChart(name){
   
 	var barW = 600;
@@ -931,7 +929,7 @@ function neg_review(neg_cloud, selected_hotel) {
 }
 
 /// TIME CHART
-function  updateTimeChart(groupByMonth){
+function updateTimeChart(groupByMonth){
 	var width_time = 700,
     	height_time = 300;
    
@@ -1312,7 +1310,7 @@ var svgleg = d3.select("#circleleg")
 // The scale you use for bubble size
 var size = function(d){return 0.08*((d)/50+80)}  // Size in pixel
 
-// Add legend: circles
+// Add legend
 var valuesToShow = [100, 5000, 10000]
 var xCircle = 50
 var xLabel = 95
@@ -1328,7 +1326,6 @@ svgleg
     .style("fill", "none")
     .attr("stroke", "#5B779F")
 
-// Add legend: segments
 svgleg
   .selectAll("legend")
   .data(valuesToShow)
@@ -1341,7 +1338,6 @@ svgleg
     .attr('stroke', '#5B779F')
     .style('stroke-dasharray', ('2,2'))
 
-// Add legend: labels
 svgleg
   .selectAll("legend")
   .data(valuesToShow)
