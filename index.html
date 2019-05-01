@@ -467,6 +467,9 @@ var Pieradius = Math.min(Piewidth, Pieheight) / 2 - Piemargin
 var label = d3.arc()
             .outerRadius(Pieradius)
             .innerRadius(Pieradius - 80);
+
+			
+
 			
 function pieChart(name,type){
 	// The radius of the pieplot is half the width or half the height (smallest one).
@@ -486,17 +489,14 @@ function pieChart(name,type){
 
   
 function updatePie(data) {
-	// Compute the position of each group on the pie:
 	var pie = d3.pie()
 			.value(function(d) { return d.value.count;} )
-	  		.sort(function(a, b) { return d3.ascending(a.key, b.key);} ) // This make sure that group order remains the same in the pie chart
+	  		.sort(function(a, b) { return d3.ascending(a.key, b.key);} ) 
 	var data_ready = pie(d3.entries(data))
 
 	// map to data
 	var u = piesvg.selectAll("path")
 	  		.data(data_ready)
-
-	// Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
 	u
 	  .enter()
 	  .append('path')
@@ -512,10 +512,14 @@ function updatePie(data) {
 	  .style("stroke-width", "2px")
 	  .style("opacity", 1)
 	                            
-	// remove the group that is not present anymore
 	u
 	  .exit()
 	  .remove()
+
+
+	  
+
+
 }
 
 
