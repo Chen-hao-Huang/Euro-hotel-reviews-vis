@@ -1086,6 +1086,44 @@ function  updateTimeChart(groupByMonth){
 			//Hide the tooltip
 			d3.select("#tooltiptime").classed("hidden", true);
 	   });
+	  
+	   grades = [ 0,Math.floor(maxct["count"]/3),Math.floor(maxct["count"]*2/3),maxct["count"]],
+
+
+	   chart.selectAll('legend')
+		.data(grades)
+		.enter()
+		.append('rect')
+		.attr("x", function(d,i){
+			return 230+55*i;
+		})
+    	.attr("y", 230)
+      	.attr("width", 20)
+		  .attr("fill",function(d,i){
+			return ctcolor(d);
+		})
+       	.attr("height", 20);
+		chart .selectAll('legendText')
+		.data(grades)
+		.enter()
+		.append("text")
+    .attr("x", function(d,i){
+			return 253+55*i;
+		})
+    .attr("y", 230+6)
+	.attr("dy", ".71em")
+	.attr("font-size",".8rem")
+	.attr("fill","#5B779F")
+    .text(function(d) { return d; });
+chart
+	.append("text")
+	.attr("x",100)
+	.attr("y",236)
+	.attr("dy", ".71em")
+	.attr("font-size",".8rem")
+	.attr("fill","#5B779F")
+	.text("Number of Reviews: ");
+
 }
 
 function timeChart(name){
