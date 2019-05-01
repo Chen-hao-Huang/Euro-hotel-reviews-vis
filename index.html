@@ -26,8 +26,7 @@
     <div class="col-md-12">
 		<div class=" text-center" style="margin-top: 20px;">
 			<h1>Studies in European Hotel Reviews</h1>
-			<p class="text-center">Click on a circle to get more information on the hotel
-			</p>
+			<p class="text-center">Click on a circle to get more information on the hotel</p>
 		</div>
 	</div>
     <div class="row">
@@ -141,8 +140,9 @@
 			<p><strong id="groupname"></strong></p>
 			<p>Number of Reviews: <span id="value"></span></p>
 		</div>
-		<div id="barChartDS"></div>
+		
 	</div>
+
 </div>
 
 <footer class="page-footer" style="background-color:gray">
@@ -546,7 +546,7 @@ function barChartRTChenhao(name){
 	var margin_time = {top: 25, right: 25, bottom: 30, left: 40};
 
 	var barH = 250;
-	//Create SVG element
+	//Create SVG element 
 	var svgRT = d3.select("#barchartds") // RT for Room Type
 				.append("svg")
 				.attr("width", barW+margin_time.left+margin_time.right)
@@ -627,6 +627,7 @@ function wrap(text, width) {
     }
   })
 }
+
 	//Create bars
 	svgRT.selectAll("rect") // bar chart for averages
 	   .data(data)
@@ -659,7 +660,7 @@ function wrap(text, width) {
 				
 			d3.select("#tooltiprtCtChenhao")
 				.select("#value")
-				.text(d[2].toFixed(2));
+				.text(d[2]);
 
 			//Show the tooltip
 			d3.select("#tooltiprtCtChenhao").classed("hidden", false);
@@ -669,6 +670,7 @@ function wrap(text, width) {
 			d3.select("#tooltiprtCtChenhao").classed("hidden", true);
 	   });
 	   
+
 
 	   
     // define the x axis
@@ -696,14 +698,15 @@ function wrap(text, width) {
 
         .text("Review Count");;
 		
+	
 
+		var grades = [  "<6.5",6.5, 7,7.5,8,8.5,9,9.5];
 
     // draw x axis
     svgRT.append('g')
     	.attr('class', 'x-axis')
     	.attr('transform', 'translate('+margin_time.left+', ' + (barH + margin_time.top) + ')')
     	.call(xAxis)
-
 		.selectAll(".tick text")
       .call(wrap,  xScale.bandwidth());
 	   // Create Dots
@@ -765,8 +768,36 @@ function wrap(text, width) {
         .attr("fill", "#5D6971")
 
         .text("Average Score");;
-		
-		
+
+		svgRT.selectAll('legend')
+		.data(grades)
+		.enter()
+		.append('rect')
+		.attr("x", function(d,i){
+			return 180+55*i;
+		})
+    	.attr("y", 6)
+      	.attr("width", 20)
+		  .attr("fill",function(d,i){
+			return getColor(d);
+		})
+       	.attr("height", 20);
+		svgRT .selectAll('legendText')
+		.data(grades)
+		.enter()
+		.append("text")
+    .attr("x", function(d,i){
+			return 203+55*i;
+		})
+    .attr("y", 12)
+	.attr("dy", ".71em")
+	.attr("font-size",".8rem")
+	.attr("fill","#5B779F")
+    .text(function(d) { return d; });
+
+
+
+
 }
 
 // POS WORD CLOUDS
